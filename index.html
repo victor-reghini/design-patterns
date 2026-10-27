@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Padrões de Projeto (GoF) • Guia Completo & Interativo</title>
+  <meta name="description" content="Guia completo, aprofundado e interativo do clássico livro 'Padrões de Projeto: Soluções Reutilizáveis de Software Orientado a Objetos' (Gang of Four - GoF), com exemplos modernos, playgrounds e quizzes." />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet" />
+
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📐</text></svg>" />
+</head>
+<body>
+  <div class="app-container">
+    <!-- Top Header -->
+    <header class="top-header">
+      <div class="header-left">
+        <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Abrir menu de navegação">☰</button>
+        <a href="#/" class="logo-brand">
+          <div class="logo-icon">DP</div>
+          <span>Padrões de Projeto <small style="font-weight: 500; color: var(--accent-primary); font-size: 0.8rem">GoF</small></span>
+        </a>
+      </div>
+
+      <nav class="top-nav">
+        <a href="#/" class="active">Visão Geral</a>
+        <a href="#/principios">Princípios O.O.</a>
+        <a href="#/lexi">O Caso Lexi</a>
+        <a href="#/matriz">Matriz GoF</a>
+        <a href="#/laboratorios">Laboratórios</a>
+        <a href="#/quizzes">Quizzes</a>
+        <a href="#/referencias">Referências</a>
+      </nav>
+
+      <div class="header-right">
+        <button class="theme-toggle-btn" id="theme-toggle-btn" title="Alternar Modo Escuro" aria-label="Alternar tema">
+          🌙
+        </button>
+      </div>
+
+      <div class="reading-progress-bar" id="reading-progress"></div>
+    </header>
+
+    <!-- Layout Principal -->
+    <div class="main-wrapper">
+      <!-- Menu Lateral Esquerdo (Inspirado no print da documentação) -->
+      <aside class="sidebar" id="app-sidebar" aria-label="Menu lateral de navegação dos padrões">
+        <!-- Preenchido via sidebar.js -->
+      </aside>
+
+      <!-- Conteúdo Principal -->
+      <main class="content-area" id="main-content-area" role="main">
+        <!-- Preenchido via router.js -->
+      </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <div class="footer-content">
+        <p><strong>Padrões de Projeto: Soluções Reutilizáveis de Software Orientado a Objetos</strong></p>
+        <p>Erich Gamma • Richard Helm • Ralph Johnson • John Vlissides (Gang of Four)</p>
+        <div class="footer-links">
+          <a href="#/">Início</a>
+          <a href="#/lexi">Estudo de Caso Lexi</a>
+          <a href="#/laboratorios">Campos de Prática</a>
+          <a href="#/quizzes">Quizzes de Fixação</a>
+          <a href="#/referencias">Referências</a>
+        </div>
+        <p style="font-size: 0.78rem; margin-top: 0.5rem; color: var(--text-muted)">
+          Portal educacional completo desenvolvido com modo claro primário, modo escuro nativo e recursos de alta interatividade.
+        </p>
+      </div>
+    </footer>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
