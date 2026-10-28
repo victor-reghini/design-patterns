@@ -5,6 +5,7 @@
  */
 
 import { patternsData } from "../data/patterns-data.js";
+import { icons } from "./icons.js";
 
 const STUDIED_KEY = "gof_studied_patterns";
 
@@ -42,7 +43,7 @@ export function renderSidebar(sidebarEl, currentHash = "") {
   sidebarEl.innerHTML = `
     <div class="sidebar-search-box">
       <div class="search-input-wrapper">
-        <span class="search-icon">🔍</span>
+        <span class="search-icon">${icons.search}</span>
         <input type="text" id="sidebar-filter-input" placeholder="Filtrar padrões (ex: Factory, Undo)..." />
       </div>
     </div>
@@ -61,8 +62,8 @@ export function renderSidebar(sidebarEl, currentHash = "") {
       <!-- Visão Geral -->
       <div class="sidebar-group">
         <div class="sidebar-group-title" data-group="geral">
-          <span>📖 O Livro GoF</span>
-          <span class="chevron">▾</span>
+          <span>O Livro GoF</span>
+          <span class="chevron">${icons.chevronDown}</span>
         </div>
         <div class="sidebar-items-group" id="group-geral">
           <a href="#/" class="sidebar-item ${currentHash === '#/' || currentHash === '' ? 'active' : ''}">
@@ -89,8 +90,8 @@ export function renderSidebar(sidebarEl, currentHash = "") {
       <!-- Criacionais -->
       <div class="sidebar-group">
         <div class="sidebar-group-title" data-group="criacional">
-          <span>🏗️ Padrões de Criação (5)</span>
-          <span class="chevron">▾</span>
+          <span>Padrões de Criação (5)</span>
+          <span class="chevron">${icons.chevronDown}</span>
         </div>
         <div class="sidebar-items-group" id="group-criacional">
           ${creational.map(p => renderPatternItem(p, currentHash, studied)).join("")}
@@ -100,8 +101,8 @@ export function renderSidebar(sidebarEl, currentHash = "") {
       <!-- Estruturais -->
       <div class="sidebar-group">
         <div class="sidebar-group-title" data-group="estrutural">
-          <span>🏢 Padrões Estruturais (7)</span>
-          <span class="chevron">▾</span>
+          <span>Padrões Estruturais (7)</span>
+          <span class="chevron">${icons.chevronDown}</span>
         </div>
         <div class="sidebar-items-group" id="group-estrutural">
           ${structural.map(p => renderPatternItem(p, currentHash, studied)).join("")}
@@ -111,8 +112,8 @@ export function renderSidebar(sidebarEl, currentHash = "") {
       <!-- Comportamentais -->
       <div class="sidebar-group">
         <div class="sidebar-group-title" data-group="comportamental">
-          <span>🔄 Comportamentais (11)</span>
-          <span class="chevron">▾</span>
+          <span>Padrões Comportamentais (11)</span>
+          <span class="chevron">${icons.chevronDown}</span>
         </div>
         <div class="sidebar-items-group" id="group-comportamental">
           ${behavioral.map(p => renderPatternItem(p, currentHash, studied)).join("")}
@@ -122,17 +123,17 @@ export function renderSidebar(sidebarEl, currentHash = "") {
       <!-- Prática & Quizzes -->
       <div class="sidebar-group">
         <div class="sidebar-group-title" data-group="pratica">
-          <span>🧪 Prática & Avaliação</span>
-          <span class="chevron">▾</span>
+          <span>Prática & Avaliação</span>
+          <span class="chevron">${icons.chevronDown}</span>
         </div>
         <div class="sidebar-items-group" id="group-pratica">
           <a href="#/laboratorios" class="sidebar-item ${currentHash === '#/laboratorios' ? 'active' : ''}">
             <span>Campos de Prática</span>
-            <span class="item-badge" style="background:#e0e7ff; color:#3730a3">Labs</span>
+            <span class="item-badge" style="background:var(--bg-sidebar-hover); color:var(--text-secondary)">Labs</span>
           </a>
           <a href="#/quizzes" class="sidebar-item ${currentHash === '#/quizzes' ? 'active' : ''}">
             <span>Quizzes & Testes</span>
-            <span class="item-badge" style="background:#fef3c7; color:#92400e">Quiz</span>
+            <span class="item-badge" style="background:var(--bg-sidebar-hover); color:var(--text-secondary)">Quiz</span>
           </a>
           <a href="#/referencias" class="sidebar-item ${currentHash === '#/referencias' ? 'active' : ''}">
             <span>Referências Bibliográficas</span>
@@ -166,10 +167,10 @@ export function renderSidebar(sidebarEl, currentHash = "") {
       const chevron = title.querySelector(".chevron");
       if (groupEl.style.display === "none") {
         groupEl.style.display = "block";
-        chevron.textContent = "▾";
+        chevron.innerHTML = icons.chevronDown;
       } else {
         groupEl.style.display = "none";
-        chevron.textContent = "▸";
+        chevron.innerHTML = icons.chevronRight;
       }
     });
   });
@@ -182,10 +183,7 @@ function renderPatternItem(p, currentHash, studied) {
     <a href="#/padrao/${p.id}" class="sidebar-item ${isActive ? 'active' : ''}" data-pattern-id="${p.id}">
       <span>
         ${p.name}
-        ${isStudied ? '<span class="read-check" title="Padrão já estudado">✓</span>' : ''}
-      </span>
-      <span class="item-badge badge-${p.category === 'criacional' ? 'creational' : p.category === 'estrutural' ? 'structural' : 'behavioral'}">
-        p.${p.gofPage}
+        ${isStudied ? `<span class="read-check" title="Padrão já estudado">${icons.check}</span>` : ''}
       </span>
     </a>
   `;
@@ -212,7 +210,7 @@ export function updateSidebarProgress() {
         const span = document.createElement("span");
         span.className = "read-check";
         span.title = "Padrão já estudado";
-        span.textContent = "✓";
+        span.innerHTML = icons.check;
         item.querySelector("span").appendChild(span);
       }
     } else {

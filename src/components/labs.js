@@ -1,3 +1,5 @@
+import { icons } from "./icons.js";
+
 /**
  * Laboratórios Interativos e Campos de Prática ("Playgrounds")
  * Demonstrações visuais interativas em tempo real dos padrões de projeto
@@ -35,39 +37,39 @@ export const labs = {
             </div>
 
             <div class="control-group buttons-row">
-              <button id="btn-update-price" class="btn btn-primary">⚡ Notificar Mudança (notify())</button>
-              <button id="btn-auto-simulate" class="btn btn-secondary">▶️ Flutuação Automática</button>
+              <button id="btn-update-price" class="btn btn-primary">Notificar Mudança (notify())</button>
+              <button id="btn-auto-simulate" class="btn btn-secondary">Flutuação Automática</button>
             </div>
           </div>
 
           <div class="observers-selection">
             <strong>Observadores Inscritos (Attach / Detach):</strong>
             <div class="checkbox-row">
-              <label><input type="checkbox" id="obs-dashboard" checked /> 📊 Painel de Cotação ao Vivo</label>
-              <label><input type="checkbox" id="obs-email" checked /> 📧 Alerta por E-mail (> R$ 150)</label>
-              <label><input type="checkbox" id="obs-bot" checked /> 🤖 Trade Bot de Compra/Venda</label>
-              <label><input type="checkbox" id="obs-audit" checked /> 📝 Log de Auditoria</label>
+              <label><input type="checkbox" id="obs-dashboard" checked /> Painel de Cotação ao Vivo</label>
+              <label><input type="checkbox" id="obs-email" checked /> Alerta por E-mail (&gt; R$ 150)</label>
+              <label><input type="checkbox" id="obs-bot" checked /> Trade Bot de Compra/Venda</label>
+              <label><input type="checkbox" id="obs-audit" checked /> Log de Auditoria</label>
             </div>
           </div>
 
           <div class="observers-grid">
             <div class="observer-box" id="box-dashboard">
-              <h5>📊 Painel Visual</h5>
+              <h5>Painel Visual</h5>
               <div class="obs-content" id="dashboard-content">Última cotação: R$ 120.00</div>
             </div>
 
             <div class="observer-box" id="box-email">
-              <h5>📧 Notificador de E-mail</h5>
+              <h5>Notificador de E-mail</h5>
               <div class="obs-content" id="email-content">Aguardando gatilho de preço...</div>
             </div>
 
             <div class="observer-box" id="box-bot">
-              <h5>🤖 Algoritmo de Trading</h5>
+              <h5>Algoritmo de Trading</h5>
               <div class="obs-content" id="bot-content">Estratégia neutra</div>
             </div>
 
             <div class="observer-box" id="box-audit">
-              <h5>📝 Log de Eventos</h5>
+              <h5>Log de Eventos</h5>
               <div class="obs-log" id="audit-log"></div>
             </div>
           </div>
@@ -121,7 +123,7 @@ export const labs = {
 
         if (chkEmail.checked) {
           if (price > 150) {
-            elEmail.innerHTML = `<span class="alert-text">🚨 E-mail enviado! Preço de ${ticker} excedeu R$ 150 (R$ ${price.toFixed(2)})</span>`;
+            elEmail.innerHTML = `<span class="alert-text">Alerta: E-mail enviado! Preço de ${ticker} excedeu R$ 150 (R$ ${price.toFixed(2)})</span>`;
             flashBox("box-email");
           } else {
             elEmail.innerHTML = `<span class="text-muted">Cotação R$ ${price.toFixed(2)} dentro da normalidade (sem alerta).</span>`;
@@ -130,11 +132,11 @@ export const labs = {
 
         if (chkBot.checked) {
           if (price < 50) {
-            elBot.innerHTML = `<span class="text-success">🟢 COMPRA FORTE (Preço baixo: R$ ${price.toFixed(2)})</span>`;
+            elBot.innerHTML = `<span class="text-success">[COMPRA FORTE] Preço baixo: R$ ${price.toFixed(2)}</span>`;
           } else if (price > 180) {
-            elBot.innerHTML = `<span class="text-danger">🔴 VENDA DE LUCRO (Preço alto: R$ ${price.toFixed(2)})</span>`;
+            elBot.innerHTML = `<span class="text-danger">[VENDA DE LUCRO] Preço alto: R$ ${price.toFixed(2)}</span>`;
           } else {
-            elBot.innerHTML = `<span>⚖️ MANTER POSIÇÃO</span>`;
+            elBot.innerHTML = `<span class="text-muted">[MANTER POSIÇÃO]</span>`;
           }
           flashBox("box-bot");
         }
@@ -163,11 +165,11 @@ export const labs = {
         if (autoInterval) {
           clearInterval(autoInterval);
           autoInterval = null;
-          btnAuto.textContent = "▶️ Flutuação Automática";
+          btnAuto.textContent = "Flutuação Automática";
           btnAuto.classList.remove("btn-danger");
           btnAuto.classList.add("btn-secondary");
         } else {
-          btnAuto.textContent = "⏹️ Parar Simulação";
+          btnAuto.textContent = "Parar Simulação";
           btnAuto.classList.remove("btn-secondary");
           btnAuto.classList.add("btn-danger");
           autoInterval = setInterval(() => {
@@ -251,7 +253,7 @@ export const labs = {
 
             <div class="result-panel">
               <div class="receipt-card">
-                <h5>🧾 Resumo do Contexto (OrderContext)</h5>
+                <h5>Resumo do Contexto (OrderContext)</h5>
                 <div class="receipt-row">
                   <span>Valor do Pedido:</span>
                   <span>R$ 299.90</span>
@@ -356,8 +358,8 @@ export const labs = {
               <div class="control-group">
                 <label>1. Escolha o Componente Base (ConcreteComponent):</label>
                 <div class="radio-pill-group">
-                  <label><input type="radio" name="coffee-base" value="espresso" checked /> ☕ Espresso Italiano (R$ 6,00)</label>
-                  <label><input type="radio" name="coffee-base" value="coldbrew" /> 🧊 Cold Brew Gelado (R$ 8,00)</label>
+                  <label><input type="radio" name="coffee-base" value="espresso" checked /> Espresso Italiano (R$ 6,00)</label>
+                  <label><input type="radio" name="coffee-base" value="coldbrew" /> Cold Brew Gelado (R$ 8,00)</label>
                 </div>
               </div>
 
@@ -366,23 +368,23 @@ export const labs = {
                 <div class="decorator-toggle-list">
                   <label class="toggle-card">
                     <input type="checkbox" id="dec-milk" />
-                    <span>🥛 Leite Vaporizado (+ R$ 2,50)</span>
+                    <span>Leite Vaporizado (+ R$ 2,50)</span>
                   </label>
                   <label class="toggle-card">
                     <input type="checkbox" id="dec-chantilly" />
-                    <span>🍦 Chantilly Artesanal (+ R$ 3,50)</span>
+                    <span>Chantilly Artesanal (+ R$ 3,50)</span>
                   </label>
                   <label class="toggle-card">
                     <input type="checkbox" id="dec-caramel" />
-                    <span>🍯 Calda de Caramelo (+ R$ 2,00)</span>
+                    <span>Calda de Caramelo (+ R$ 2,00)</span>
                   </label>
                   <label class="toggle-card">
                     <input type="checkbox" id="dec-cinnamon" />
-                    <span>🌿 Canela de Ceilão (+ R$ 1,20)</span>
+                    <span>Canela de Ceilão (+ R$ 1,20)</span>
                   </label>
                   <label class="toggle-card">
                     <input type="checkbox" id="dec-shot" />
-                    <span>🔥 Extra Shot de Espresso (+ R$ 4,00)</span>
+                    <span>Extra Shot de Espresso (+ R$ 4,00)</span>
                   </label>
                 </div>
               </div>
@@ -390,7 +392,7 @@ export const labs = {
 
             <div class="result-panel">
               <div class="coffee-cup-visual">
-                <div class="cup-icon">☕</div>
+                <div class="cup-icon text-primary" style="display:flex; justify-content:center; align-items:center;">${icons.coffee}</div>
                 <div class="cup-order-desc" id="cup-desc">Espresso Italiano</div>
                 <div class="cup-price" id="cup-price">R$ 6,00</div>
               </div>
@@ -477,15 +479,15 @@ export const labs = {
 
           <div class="editor-area-wrapper">
             <div class="editor-toolbar">
-              <button class="btn btn-sm btn-tool" id="cmd-add-word">➕ Adicionar "Design Patterns"</button>
-              <button class="btn btn-sm btn-tool" id="cmd-uppercase">🔠 Caixa Alta</button>
-              <button class="btn btn-sm btn-tool" id="cmd-lowercase">🔡 Caixa Baixa</button>
-              <button class="btn btn-sm btn-tool" id="cmd-reverse">🔄 Inverter Texto</button>
-              <button class="btn btn-sm btn-tool" id="cmd-delete-last">🔙 Deletar Última Palavra</button>
-              <button class="btn btn-sm btn-secondary" id="cmd-macro">⚡ Macro (3 Ações)</button>
+              <button class="btn btn-sm btn-tool" id="cmd-add-word">Adicionar "Design Patterns"</button>
+              <button class="btn btn-sm btn-tool" id="cmd-uppercase">Caixa Alta</button>
+              <button class="btn btn-sm btn-tool" id="cmd-lowercase">Caixa Baixa</button>
+              <button class="btn btn-sm btn-tool" id="cmd-reverse">Inverter Texto</button>
+              <button class="btn btn-sm btn-tool" id="cmd-delete-last">Deletar Última Palavra</button>
+              <button class="btn btn-sm btn-secondary" id="cmd-macro">Macro (3 Ações)</button>
               <div class="divider"></div>
-              <button class="btn btn-sm btn-outline" id="btn-undo" title="Desfazer">↩️ Desfazer (Undo)</button>
-              <button class="btn btn-sm btn-outline" id="btn-redo" title="Refazer">↪️ Refazer (Redo)</button>
+              <button class="btn btn-sm btn-outline" id="btn-undo" title="Desfazer">Desfazer (Undo)</button>
+              <button class="btn btn-sm btn-outline" id="btn-redo" title="Refazer">Refazer (Redo)</button>
             </div>
 
             <div class="editor-canvas" id="editor-display" contenteditable="false">
@@ -568,7 +570,7 @@ export const labs = {
         // Linha do presente
         const line = document.createElement("span");
         line.className = "present-line";
-        line.textContent = "📍 PRESENTE";
+        line.textContent = "PRESENTE";
         timeline.appendChild(line);
 
         // Futuro
@@ -752,10 +754,10 @@ export const labs = {
           <div class="control-group">
             <label>Selecione a Fábrica Concreta (GUIFactory):</label>
             <div class="factory-selector-tabs">
-              <button class="btn btn-tab active" data-factory="win">🪟 Windows 11 Fluent</button>
-              <button class="btn btn-tab" data-factory="mac">🍎 macOS Sonoma</button>
-              <button class="btn btn-tab" data-factory="linux">🐧 Linux Adwaita</button>
-              <button class="btn btn-tab" data-factory="retro">🕹️ Retrô Motif (1995 GoF)</button>
+              <button class="btn btn-tab active" data-factory="win">Windows 11 Fluent</button>
+              <button class="btn btn-tab" data-factory="mac">macOS Sonoma</button>
+              <button class="btn btn-tab" data-factory="linux">Linux Adwaita</button>
+              <button class="btn btn-tab" data-factory="retro">Retrô Motif (1995 GoF)</button>
             </div>
           </div>
 
@@ -833,11 +835,11 @@ export const labs = {
             <div class="add-node-bar">
               <input type="text" id="node-name" placeholder="Nome do arquivo ou pasta" class="form-input" value="novo-modulo" />
               <select id="node-type" class="form-select">
-                <option value="file">📄 Arquivo (.ts)</option>
-                <option value="folder">📁 Pasta</option>
+                <option value="file">Arquivo (.ts)</option>
+                <option value="folder">Pasta</option>
               </select>
               <input type="number" id="file-size" placeholder="Tamanho (KB)" value="15" class="form-input size-input" />
-              <button id="btn-add-node" class="btn btn-primary">➕ Adicionar Nó</button>
+              <button id="btn-add-node" class="btn btn-primary">Adicionar Nó</button>
             </div>
 
             <div class="tree-display-container" id="tree-container">
@@ -887,7 +889,7 @@ export const labs = {
         if (node.type === "file") {
           return `
             <div class="tree-row" style="padding-left: ${indent}px">
-              <span class="icon">📄</span>
+              <span class="icon" style="display:inline-flex; align-items:center; color:var(--text-muted);">${icons.file}</span>
               <span class="name">${node.name}</span>
               <span class="size-badge">${node.size} KB</span>
             </div>
@@ -898,7 +900,7 @@ export const labs = {
           return `
             <div class="tree-folder-group">
               <div class="tree-row folder-row" style="padding-left: ${indent}px">
-                <span class="icon">📁</span>
+                <span class="icon" style="display:inline-flex; align-items:center; color:var(--accent-primary);">${icons.folder}</span>
                 <span class="name">${node.name}/</span>
                 <span class="size-badge folder-badge">${total} KB (soma dos filhos)</span>
               </div>
@@ -951,40 +953,40 @@ export const labs = {
             <div class="input-with-button">
               <span class="currency-prefix">R$</span>
               <input type="number" id="expense-amount" value="3800" min="10" max="200000" class="form-input" />
-              <button id="btn-run-chain" class="btn btn-primary">🚀 Disparar Solicitação na Cadeia</button>
+              <button id="btn-run-chain" class="btn btn-primary">Disparar Solicitação na Cadeia</button>
             </div>
           </div>
 
           <div class="chain-visual-steps">
             <div class="chain-step-node" id="step-lead">
-              <div class="step-icon">👤</div>
+              <div class="step-icon" style="display:flex; justify-content:center; align-items:center;">${icons.user}</div>
               <div class="step-role">Líder Técnico</div>
               <div class="step-limit">Teto: até R$ 500</div>
               <div class="step-status" id="status-lead">Aguardando...</div>
             </div>
 
-            <div class="chain-connector">➔</div>
+            <div class="chain-connector">&rarr;</div>
 
             <div class="chain-step-node" id="step-manager">
-              <div class="step-icon">👔</div>
+              <div class="step-icon" style="display:flex; justify-content:center; align-items:center;">${icons.briefcase}</div>
               <div class="step-role">Gerente de Área</div>
               <div class="step-limit">Teto: até R$ 5.000</div>
               <div class="step-status" id="status-manager">Aguardando...</div>
             </div>
 
-            <div class="chain-connector">➔</div>
+            <div class="chain-connector">&rarr;</div>
 
             <div class="chain-step-node" id="step-director">
-              <div class="step-icon">🏛️</div>
+              <div class="step-icon" style="display:flex; justify-content:center; align-items:center;">${icons.shield}</div>
               <div class="step-role">Diretor Financeiro</div>
               <div class="step-limit">Teto: até R$ 50.000</div>
               <div class="step-status" id="status-director">Aguardando...</div>
             </div>
 
-            <div class="chain-connector">➔</div>
+            <div class="chain-connector">&rarr;</div>
 
             <div class="chain-step-node" id="step-board">
-              <div class="step-icon">👥</div>
+              <div class="step-icon" style="display:flex; justify-content:center; align-items:center;">${icons.users}</div>
               <div class="step-role">Conselho de Administração</div>
               <div class="step-limit">Teto: Ilimitado</div>
               <div class="step-status" id="status-board">Aguardando...</div>
@@ -1032,11 +1034,11 @@ export const labs = {
             nodeEl.classList.remove("evaluating");
             if (amount <= s.limit) {
               nodeEl.classList.add("approved");
-              statusEl.textContent = "✅ APROVADO";
+              statusEl.textContent = "APROVADO";
               resultBox.innerHTML = `<strong>Sucesso:</strong> Solicitação de <strong>R$ ${amount.toFixed(2)}</strong> foi tratada e APROVADA por <em>${s.title}</em>. A cadeia parou com sucesso!`;
             } else {
               nodeEl.classList.add("passed");
-              statusEl.textContent = "⏭️ Repassado ao sucessor";
+              statusEl.textContent = "Repassado ao sucessor";
               currentIdx++;
               stepThrough();
             }
@@ -1057,7 +1059,7 @@ export const labs = {
         <div class="lab-card">
           <div class="lab-header">
             <span class="lab-badge">Campo de Prática • Adapter</span>
-            <h4>Adaptador de API de Pagamentos (JSON Moderno ➔ XML Legado)</h4>
+            <h4>Adaptador de API de Pagamentos (JSON Moderno &rarr; XML Legado)</h4>
             <p>O cliente envia uma requisição moderna em JSON. O <strong>BankAdapter</strong> intercepta, faz conversão de moeda/centavos e traduz para o protocolo SOAP/XML antigo.</p>
           </div>
 
@@ -1076,7 +1078,7 @@ export const labs = {
               <button id="btn-run-adapter" class="btn btn-primary mt-2">Transacionar</button>
             </div>
 
-            <div class="flow-arrow">➔<br /><small>Adapter</small></div>
+            <div class="flow-arrow">&rarr;<br /><small>Adapter</small></div>
 
             <div class="flow-card">
               <h6>2. O que o Legado (Adaptee) recebe:</h6>

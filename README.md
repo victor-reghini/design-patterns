@@ -1,25 +1,25 @@
-# 📐 Padrões de Projeto (GoF) • Guia Completo & Interativo
+# Padrões de Projeto (GoF) • Guia Completo & Interativo
 
 > Um portal educacional moderno, completo e interativo sobre a obra clássica **"Padrões de Projeto: Soluções Reutilizáveis de Software Orientado a Objetos"** (*Design Patterns: Elements of Reusable Object-Oriented Software*), de **Erich Gamma, Richard Helm, Ralph Johnson e John Vlissides** (a célebre *Gang of Four* — GoF).
 
 ---
 
-## 🌟 Visão Geral
+## Visão Geral
 
 Este projeto foi construído para ir muito além de um resumo convencional: ele **expande e atualiza a obra original de 1994** para o ecossistema de software contemporâneo, integrando exemplos de frameworks modernos (Spring Boot, React, NestJS, Express, JDK, Android), campos de prática interativos (playgrounds) e um sistema de quizzes para fixação de conteúdo.
 
 ### Principais Destaques
 
-- 📚 **Os 23 Padrões de Projeto GoF Completos:**
+- **Os 23 Padrões de Projeto GoF Completos:**
   - **Criacionais (5):** Abstract Factory, Builder, Factory Method, Prototype, Singleton.
   - **Estruturais (7):** Adapter, Bridge, Composite, Decorator, Facade, Flyweight, Proxy.
   - **Comportamentais (11):** Chain of Responsibility, Command, Interpreter, Iterator, Mediator, Memento, Observer, State, Strategy, Template Method, Visitor.
-- 💻 **Código em Múltiplas Linguagens com 1 Clique para Copiar:**
+- **Código em Múltiplas Linguagens com 1 Clique para Copiar:**
   - **TypeScript / Modern JavaScript** (tipagem estrita e padrões limpos)
   - **Java 21+** (idiomático com interfaces e POO moderna)
   - **Python 3.12+** (com classes abstratas `ABC` e type hints)
   - **C++ Original do GoF** (código histórico documentado no livro)
-- 🧪 **9 Campos de Prática Interativos (Live Playgrounds):**
+- **9 Campos de Prática Interativos (Live Playgrounds):**
   - **Observer:** Mercado de ações com simulação de cotações ao vivo e múltiplos ouvintes desacoplados.
   - **Strategy:** Calculadora de checkout alternando algoritmos de frete (Sedex, PAC, Motoboy, Frete Grátis) dinamicamente.
   - **Decorator:** Customizador de café gourmet com empilhamento dinâmico de envoltórios em tempo de execução.
@@ -29,26 +29,26 @@ Este projeto foi construído para ir muito além de um resumo convencional: ele 
   - **Composite:** Explorador hierárquico de pastas e arquivos com cálculo recursivo e uniforme de tamanho total.
   - **Chain of Responsibility:** Esteira corporativa de aprovação de despesas por níveis de autoridade.
   - **Adapter:** Conversor de API moderna em JSON para webservice legado em XML/SOAP.
-- 🎯 **Quizzes de Fixação & Modo Certificação:**
+- **Quizzes de Fixação & Modo Certificação:**
   - Perguntas com correção imediata, justificativas técnicas e referências às páginas do livro.
   - Classificação de perfil do desenvolvedor (*Aprendiz*, *Pleno* e *Arquiteto de Software GoF*).
-- 📰 **O Caso de Estudo Lexi (Capítulo 2):**
+- **O Caso de Estudo Lexi (Capítulo 2):**
   - Análise aprofundada dos 7 problemas de engenharia do editor de documentos WYSIWYG e como os 8 padrões interagem em harmonia.
-- 🧭 **Fundamentos e Princípios de Arquitetura:**
+- **Fundamentos e Princípios de Arquitetura:**
   - *"Programe para uma interface, não para uma implementação"*.
   - *"Prefira a composição de objetos à herança de classes"*.
   - Análise das 8 causas clássicas de reformulação de software.
   - A Matriz do Espaço dos Padrões (Tabela 1.1) e o Grafo de Relacionamentos (Figura 1.1).
-- 🌗 **Modo Claro & Modo Escuro (Dark Mode):**
+- **Modo Claro & Modo Escuro (Dark Mode):**
   - Desenvolvido primariamente em **Modo Claro** com tipografia editorial de alta legibilidade (*Outfit*, *Inter*, *JetBrains Mono*).
   - Suporte completo a **Modo Escuro**, com contraste WCAG AA e persistência da preferência no `localStorage`.
-- 📑 **Navegação Lateral Estilo W3Schools:**
-  - Barra de pesquisa em tempo real no menu lateral.
+- **Navegação Lateral Estilo W3Schools:**
+  - Barra de pesquisa em tempo real no menu lateral com ícone vetorial sóbrio.
   - Categorias colapsáveis e indicadores visuais de padrões já estudados com botão de bookmark.
 
 ---
 
-## 🚀 Como Executar o Projeto Localmente
+## Como Executar o Projeto Localmente
 
 ### Pré-requisitos
 
@@ -88,7 +88,7 @@ Este projeto foi construído para ir muito além de um resumo convencional: ele 
 
 ---
 
-## 📂 Estrutura de Arquivos e Diretórios
+## Estrutura de Arquivos e Diretórios
 
 ```text
 design-patterns/
@@ -109,6 +109,7 @@ design-patterns/
     │   ├── patterns-data.js     # Base detalhada dos 23 padrões com exemplos em 4 linguagens
     │   └── quizzes-data.js      # Banco de questões comentadas com justificativas
     └── components/
+        ├── icons.js             # Biblioteca de ícones vetoriais SVG sóbrios e minimalistas
         ├── theme.js             # Gerenciamento de tema Claro/Escuro com persistência
         ├── sidebar.js           # Menu lateral com busca em tempo real e contador de progresso
         ├── router.js            # Roteador SPA hash-based (`#/`, `#/padrao/:id`, `#/lexi`, etc.)
@@ -118,7 +119,7 @@ design-patterns/
 
 ---
 
-## 🗺️ Mapa de Rotas do Portal
+## Mapa de Rotas do Portal
 
 O sistema utiliza rotas baseadas em hash (`#`), permitindo acesso direto e compatibilidade total offline:
 
@@ -135,7 +136,7 @@ O sistema utiliza rotas baseadas em hash (`#`), permitindo acesso direto e compa
 
 ---
 
-## 📚 Referências Bibliográficas
+## Referências Bibliográficas
 
 1. **GAMMA, Erich; HELM, Richard; JOHNSON, Ralph; VLISSIDES, John.** *Padrões de Projeto: Soluções Reutilizáveis de Software Orientado a Objetos.* Porto Alegre: Bookman, 2000 / 2007. (Edição original: *Design Patterns: Elements of Reusable Object-Oriented Software.* Addison-Wesley, 1994).
 2. **ALEXANDER, Christopher et al.** *A Pattern Language: Towns, Buildings, Construction.* Oxford University Press, 1977.

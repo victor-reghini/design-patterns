@@ -140,6 +140,7 @@ body {
   display: flex;
   flex: 1;
   position: relative;
+  align-items: flex-start;
 }
 
 /* Sidebar Esquerda (Inspirada no print da W3Schools) */
@@ -148,7 +149,7 @@ body {
   min-width: var(--sidebar-width);
   background-color: var(--bg-sidebar);
   border-right: 1px solid var(--border-color);
-  height: calc(100vh - var(--header-height));
+  max-height: calc(100vh - var(--header-height));
   position: sticky;
   top: var(--header-height);
   overflow-y: auto;
@@ -189,11 +190,13 @@ body {
 
 .search-icon {
   position: absolute;
-  left: 0.6rem;
+  left: 0.65rem;
   top: 50%;
   transform: translateY(-50%);
   color: var(--text-muted);
-  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
 }
 
 /* Estatística de Estudo */
@@ -242,6 +245,12 @@ body {
   color: var(--text-primary);
 }
 
+.sidebar-group-title .chevron {
+  display: flex;
+  align-items: center;
+  color: var(--text-muted);
+}
+
 .sidebar-item {
   display: flex;
   align-items: center;
@@ -275,9 +284,11 @@ body {
 }
 
 .sidebar-item .read-check {
-  font-size: 0.8rem;
+  display: inline-flex;
+  align-items: center;
   color: var(--success);
-  margin-left: 0.3rem;
+  margin-left: 0.4rem;
+  vertical-align: middle;
 }
 
 /* Área Principal de Conteúdo */
@@ -371,6 +382,10 @@ body {
   font-size: 0.88rem;
   color: var(--text-muted);
   text-align: center;
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  clear: both;
 }
 
 .footer-content {

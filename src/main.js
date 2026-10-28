@@ -45,6 +45,8 @@ document.addEventListener("DOMContentLoaded", () => {
         link.classList.remove("active");
       }
     });
+
+    adjustSidebarHeight();
   }
 
   // 4. Mobile Menu Drawer
@@ -54,7 +56,27 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 5. Barra de Leitura Superior no Scroll
+  // 5. Ajuste Dinâmico da Sidebar (Permanecer rigorosamente acima do Footer)
+  const footerEl = document.querySelector(".app-footer");
+  function adjustSidebarHeight() {
+    if (!sidebarEl) return;
+    if (window.innerWidth <= 992) {
+      sidebarEl.style.maxHeight = "";
+      return;
+    }
+    if (!footerEl) return;
+    const footerRect = footerEl.getBoundingClientRect();
+    const windowHeight = window.innerHeight;
+    const headerHeight = 64; // var(--header-height)
+    if (footerRect.top < windowHeight) {
+      const available = Math.max(120, footerRect.top - headerHeight);
+      sidebarEl.style.maxHeight = `${available}px`;
+    } else {
+      sidebarEl.style.maxHeight = `calc(100vh - var(--header-height))`;
+    }
+  }
+
+  // 6. Barra de Leitura Superior no Scroll & Ajuste da Sidebar
   window.addEventListener("scroll", () => {
     const scrollTop = window.scrollY;
     const docHeight = document.documentElement.scrollHeight - window.innerHeight;
@@ -62,9 +84,12 @@ document.addEventListener("DOMContentLoaded", () => {
       const scrollPercent = (scrollTop / docHeight) * 100;
       readingProgressBar.style.width = `${Math.min(100, Math.max(0, scrollPercent))}%`;
     }
-  });
+    adjustSidebarHeight();
+  }, { passive: true });
 
-  // 6. Listener de Navegação Hash
+  window.addEventListener("resize", adjustSidebarHeight, { passive: true });
+
+  // 7. Listener de Navegação Hash
   window.addEventListener("hashchange", updateApp);
 
   // Inicialização inicial

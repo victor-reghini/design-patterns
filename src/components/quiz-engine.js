@@ -4,6 +4,7 @@
  */
 
 import { quizzesData } from "../data/quizzes-data.js";
+import { icons } from "./icons.js";
 
 const QUIZ_PROGRESS_KEY = "gof_quiz_answers";
 
@@ -33,7 +34,7 @@ export function renderSingleQuiz(container, question) {
   container.innerHTML = `
     <div class="quiz-container" id="quiz-${question.id}">
       <div class="quiz-header">
-        <span class="quiz-badge">🧠 Quiz de Fixação</span>
+        <span class="quiz-badge">Quiz de Fixação</span>
         <span class="text-muted" style="font-size: 0.8rem">1 Pergunta</span>
       </div>
       <div class="quiz-question-text">${question.question}</div>
@@ -48,7 +49,7 @@ export function renderSingleQuiz(container, question) {
       <div class="quiz-feedback-box" style="display: ${previouslySelected !== undefined ? 'block' : 'none'}">
         ${previouslySelected !== undefined ? `
           <div class="${question.options[previouslySelected]?.isCorrect ? 'feedback-correct' : 'feedback-wrong'}">
-            <strong>${question.options[previouslySelected]?.isCorrect ? '🎉 Correto!' : '❌ Incorreto!'}</strong>
+            <strong>${question.options[previouslySelected]?.isCorrect ? 'Correto!' : 'Incorreto.'}</strong>
             <p>${question.explanation}</p>
           </div>
         ` : ''}
@@ -78,7 +79,7 @@ export function renderSingleQuiz(container, question) {
       feedbackBox.style.display = "block";
       feedbackBox.innerHTML = `
         <div class="${isRight ? 'feedback-correct' : 'feedback-wrong'}">
-          <strong>${isRight ? '🎉 Parabéns, resposta correta!' : '❌ Não exatamente.'}</strong>
+          <strong>${isRight ? 'Correto!' : 'Incorreto.'}</strong>
           <p>${question.explanation}</p>
         </div>
       `;
@@ -107,16 +108,16 @@ export function renderQuizzesPage(container, selectedCategory = "todos") {
   container.innerHTML = `
     <div class="quizzes-hub">
       <div class="quizzes-hero">
-        <h1 class="page-title">🎯 Quizzes & Desafios GoF</h1>
+        <h1 class="page-title">Quizzes & Desafios GoF</h1>
         <p class="page-subtitle">Teste e consolide seus conhecimentos sobre os 23 padrões de projeto e princípios fundamentais do livro.</p>
       </div>
 
       <div class="grid-2">
         <div class="quiz-score-card">
-          <div class="score-trophy">🏆</div>
+          <div class="score-trophy text-primary" style="display:flex; justify-content:center; align-items:center; margin-bottom: 0.5rem;">${icons.award}</div>
           <div class="score-number">${correctCount} / ${quizzesData.length}</div>
           <div class="score-rank">
-            ${percent >= 80 ? "🥇 Arquiteto de Software GoF" : percent >= 50 ? "🥈 Desenvolvedor Pleno" : "🥉 Aprendiz de Padrões"}
+            ${percent >= 80 ? "Nível: Arquiteto de Software" : percent >= 50 ? "Nível: Desenvolvedor Pleno" : "Nível: Aprendiz de Padrões"}
           </div>
           <p class="text-muted">Progresso geral de acertos: <strong>${percent}%</strong></p>
           <div class="study-progress-bar-bg" style="height: 10px; margin-top: 0.75rem;">
@@ -134,7 +135,7 @@ export function renderQuizzesPage(container, selectedCategory = "todos") {
             <button class="btn btn-tab ${selectedCategory === 'estrutural' ? 'active' : ''}" data-cat="estrutural">Estruturais</button>
             <button class="btn btn-tab ${selectedCategory === 'comportamental' ? 'active' : ''}" data-cat="comportamental">Comportamentais</button>
           </div>
-          <button id="btn-reset-quiz" class="btn btn-sm btn-outline mt-4">🔄 Reiniciar Respostas</button>
+          <button id="btn-reset-quiz" class="btn btn-sm btn-outline mt-4" style="display:inline-flex; align-items:center; gap:0.4rem;">${icons.refresh} Reiniciar Respostas</button>
         </div>
       </div>
 

@@ -3,6 +3,8 @@
  * Persiste a escolha do usuário no localStorage
  */
 
+import { icons } from "./icons.js";
+
 const THEME_KEY = "gof_patterns_theme";
 
 export function initTheme() {
@@ -25,11 +27,11 @@ function updateThemeButton(theme) {
   const btn = document.getElementById("theme-toggle-btn");
   if (!btn) return;
   if (theme === "dark") {
-    btn.innerHTML = "☀️";
+    btn.innerHTML = icons.sun;
     btn.title = "Alternar para Modo Claro";
     btn.setAttribute("aria-label", "Alternar para Modo Claro");
   } else {
-    btn.innerHTML = "🌙";
+    btn.innerHTML = icons.moon;
     btn.title = "Alternar para Modo Escuro";
     btn.setAttribute("aria-label", "Alternar para Modo Escuro");
   }

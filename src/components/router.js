@@ -9,6 +9,7 @@ import { quizzesData } from "../data/quizzes-data.js";
 import { renderSingleQuiz, renderQuizzesPage } from "./quiz-engine.js";
 import { labs } from "./labs.js";
 import { getStudiedPatterns, togglePatternStudied, updateSidebarProgress } from "./sidebar.js";
+import { icons } from "./icons.js";
 
 export function handleRoute(contentArea) {
   const hash = window.location.hash || "#/";
@@ -56,9 +57,9 @@ function renderHomePage(container) {
   container.innerHTML = `
     <div class="page-action-header">
       <div class="breadcrumb text-muted" style="font-size: 0.85rem">
-        GoF Padrões de Projeto ❯ <strong>Apresentação & Visão Geral</strong>
+        GoF Padrões de Projeto / <strong>Apresentação & Visão Geral</strong>
       </div>
-      <a href="#/principios" class="pager-btn next-btn">Próximo: 2 Princípios de POO ❯</a>
+      <a href="#/principios" class="pager-btn next-btn">Próximo: 2 Princípios de POO →</a>
     </div>
 
     <div class="hero-section">
@@ -68,11 +69,11 @@ function renderHomePage(container) {
     </div>
 
     <div class="callout callout-info">
-      <h5>💡 Sobre Esta Edição Digital Expandida</h5>
+      <h5>Sobre Esta Edição Digital Expandida</h5>
       <p>Este portal tem como objetivo <strong>"resumir"</strong> a clássica obra do Gang of Four (GoF) — entre aspas porque o conteúdo foi <strong>expandido e atualizado</strong> com implementações modernas (TypeScript, Java 21, Python 3 e C++ original), exemplos de arquitetura real em frameworks consagrados (Spring, React, NestJS, Express), <strong>campos de prática interativos</strong> e <strong>quizzes de fixação</strong> com explicações ponto a ponto.</p>
     </div>
 
-    <h2 class="section-title">👥 Os Autores (A Famosa "Gang of Four" - GoF)</h2>
+    <h2 class="section-title">Os Autores (A Famosa "Gang of Four" - GoF)</h2>
     <div class="grid-2">
       ${bookOverview.authors.map(a => `
         <div class="author-pill">
@@ -85,7 +86,7 @@ function renderHomePage(container) {
       `).join("")}
     </div>
 
-    <h2 class="section-title">🧭 Os 4 Elementos Essenciais de um Padrão</h2>
+    <h2 class="section-title">Os 4 Elementos Essenciais de um Padrão</h2>
     <p class="text-muted">Conforme definido por Christopher Alexander e adaptado pelo GoF (pág. 19), todo padrão de projeto é composto por quatro elementos indispensáveis:</p>
     <div class="grid-2 mt-3">
       ${bookOverview.patternElements.map(el => `
@@ -96,7 +97,7 @@ function renderHomePage(container) {
       `).join("")}
     </div>
 
-    <h2 class="section-title">📊 Os 23 Padrões Catalogados por Categoria</h2>
+    <h2 class="section-title">Os 23 Padrões Catalogados por Categoria</h2>
     <div class="grid-3">
       <div class="info-card" style="border-top: 4px solid var(--cat-creational)">
         <span class="badge badge-creational">5 Padrões</span>
@@ -147,7 +148,7 @@ function renderHomePage(container) {
     </div>
 
     <div class="callout callout-success mt-4">
-      <h5>🎓 Dica de Aprendizado Rápido do GoF (pág. 10)</h5>
+      <h5>Dica de Aprendizado Rápido do GoF (pág. 10)</h5>
       <p>Se você está começando a estudar agora, o próprio livro sugere iniciar pelos 8 padrões mais comuns e essenciais no mercado de trabalho:</p>
       <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.5rem">
         <a href="#/padrao/abstract-factory" class="btn btn-sm btn-outline">Abstract Factory</a>
@@ -169,8 +170,8 @@ function renderHomePage(container) {
 function renderPrinciplesPage(container) {
   container.innerHTML = `
     <div class="page-action-header">
-      <a href="#/" class="pager-btn">❮ Anterior: Apresentação</a>
-      <a href="#/remodelacao" class="pager-btn next-btn">Próximo: 8 Causas de Reformulação ❯</a>
+      <a href="#/" class="pager-btn">← Anterior: Apresentação</a>
+      <a href="#/remodelacao" class="pager-btn next-btn">Próximo: 8 Causas de Reformulação →</a>
     </div>
 
     <h1 class="page-title">Dois Princípios Fundamentais de Projeto O.O.</h1>
@@ -189,18 +190,18 @@ function renderPrinciplesPage(container) {
 
         <div class="tradeoffs-container mt-3">
           <div class="tradeoff-card tradeoff-cons">
-            <h5>❌ Código Rígido (Anti-padrão)</h5>
+            <h5>Código Rígido (Anti-padrão)</h5>
             <code>${p.badPractice}</code>
           </div>
           <div class="tradeoff-card tradeoff-pros">
-            <h5>✅ Código Flexível (GoF)</h5>
+            <h5>Código Flexível (GoF)</h5>
             <code>${p.goodPractice}</code>
           </div>
         </div>
       </div>
     `).join("")}
 
-    <h2 class="section-title">⚖️ Herança de Classe vs Composição de Objetos</h2>
+    <h2 class="section-title">Herança de Classe vs Composição de Objetos</h2>
     <div class="table-responsive">
       <table class="gof-table">
         <thead>
@@ -243,8 +244,8 @@ function renderPrinciplesPage(container) {
 function renderRedesignCausesPage(container) {
   container.innerHTML = `
     <div class="page-action-header">
-      <a href="#/principios" class="pager-btn">❮ Anterior: Princípios</a>
-      <a href="#/lexi" class="pager-btn next-btn">Próximo: O Caso Lexi ❯</a>
+      <a href="#/principios" class="pager-btn">← Anterior: Princípios</a>
+      <a href="#/lexi" class="pager-btn next-btn">Próximo: O Caso Lexi →</a>
     </div>
 
     <h1 class="page-title">As 8 Causas de Reformulação de Software</h1>
@@ -284,19 +285,19 @@ function renderLexiPage(container) {
 
   container.innerHTML = `
     <div class="page-action-header">
-      <a href="#/remodelacao" class="pager-btn">❮ Anterior: Causas de Reformulação</a>
-      <a href="#/matriz" class="pager-btn next-btn">Próximo: Matriz GoF ❯</a>
+      <a href="#/remodelacao" class="pager-btn">← Anterior: Causas de Reformulação</a>
+      <a href="#/matriz" class="pager-btn next-btn">Próximo: Matriz GoF →</a>
     </div>
 
     <h1 class="page-title">${lexi.title}</h1>
     <p class="page-subtitle">${lexi.subtitle}</p>
 
     <div class="callout callout-info">
-      <h5>📄 Sobre o Editor Lexi (Capítulo 2 do Livro)</h5>
+      <h5>Sobre o Editor Lexi (Capítulo 2 do Livro)</h5>
       <p>${lexi.description}</p>
     </div>
 
-    <h2 class="section-title">🧩 Os 8 Desafios Arquiteturais do Lexi e suas Soluções</h2>
+    <h2 class="section-title">Os 8 Desafios Arquiteturais do Lexi e suas Soluções</h2>
     <div class="lexi-challenges-list">
       ${lexi.challenges.map(c => `
         <div class="info-card mt-3">
@@ -321,8 +322,8 @@ function renderLexiPage(container) {
 function renderMatrixPage(container) {
   container.innerHTML = `
     <div class="page-action-header">
-      <a href="#/lexi" class="pager-btn">❮ Anterior: O Caso Lexi</a>
-      <a href="#/relacionamentos" class="pager-btn next-btn">Próximo: Grafo de Relações ❯</a>
+      <a href="#/lexi" class="pager-btn">← Anterior: O Caso Lexi</a>
+      <a href="#/relacionamentos" class="pager-btn next-btn">Próximo: Grafo de Relações →</a>
     </div>
 
     <h1 class="page-title">${bookOverview.catalogMatrix.title}</h1>
@@ -399,8 +400,8 @@ function renderMatrixPage(container) {
 function renderRelationshipsPage(container) {
   container.innerHTML = `
     <div class="page-action-header">
-      <a href="#/matriz" class="pager-btn">❮ Anterior: Matriz GoF</a>
-      <a href="#/padrao/abstract-factory" class="pager-btn next-btn">Iniciar Catálogo: Abstract Factory ❯</a>
+      <a href="#/matriz" class="pager-btn">← Anterior: Matriz GoF</a>
+      <a href="#/padrao/abstract-factory" class="pager-btn next-btn">Iniciar Catálogo: Abstract Factory →</a>
     </div>
 
     <h1 class="page-title">Mapa de Relacionamentos entre os Padrões</h1>
@@ -451,21 +452,21 @@ function renderPatternPage(container, patternId) {
     <div class="page-action-header">
       <div class="pager-buttons">
         ${prevPattern ? `
-          <a href="#/padrao/${prevPattern.id}" class="pager-btn">❮ Anterior: ${prevPattern.name}</a>
+          <a href="#/padrao/${prevPattern.id}" class="pager-btn">← Anterior: ${prevPattern.name}</a>
         ` : `
-          <a href="#/" class="pager-btn">❮ Início</a>
+          <a href="#/" class="pager-btn">← Início</a>
         `}
       </div>
 
       <button class="bookmark-action-btn ${isStudied ? 'marked' : ''}" id="btn-toggle-bookmark">
-        ${isStudied ? '✓ Marcado como Estudado' : '🔖 Marcar como Estudado'}
+        ${isStudied ? `${icons.bookmarkCheck} <span>Marcado como Estudado</span>` : `${icons.bookmark} <span>Marcar como Estudado</span>`}
       </button>
 
       <div class="pager-buttons">
         ${nextPattern ? `
-          <a href="#/padrao/${nextPattern.id}" class="pager-btn next-btn">Próximo: ${nextPattern.name} ❯</a>
+          <a href="#/padrao/${nextPattern.id}" class="pager-btn next-btn">Próximo: ${nextPattern.name} →</a>
         ` : `
-          <a href="#/quizzes" class="pager-btn next-btn">Ir para Quizzes ❯</a>
+          <a href="#/quizzes" class="pager-btn next-btn">Ir para Quizzes →</a>
         `}
       </div>
     </div>
@@ -475,7 +476,6 @@ function renderPatternPage(container, patternId) {
       <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.75rem">
         <span class="badge ${categoryBadgeClass}">${p.category}</span>
         <span class="badge badge-scope">Escopo de ${p.scope}</span>
-        <span class="badge badge-scope">GoF pág. ${p.gofPage}</span>
         ${p.aliases && p.aliases.length > 0 ? `<span class="badge badge-scope">Também conhecido como: ${p.aliases.join(", ")}</span>` : ''}
       </div>
 
@@ -483,25 +483,25 @@ function renderPatternPage(container, patternId) {
       <p class="page-subtitle" style="margin-bottom: 1.25rem"><em>${p.originalName} Design Pattern</em></p>
 
       <div class="callout callout-info" style="margin-top: 0">
-        <h5>🎯 Intenção e Objetivo (GoF)</h5>
+        <h5>Intenção e Objetivo (GoF)</h5>
         <p style="font-size: 1.05rem; font-weight: 500">${p.intent}</p>
       </div>
     </div>
 
     <!-- Problema & Motivação -->
-    <h2 class="section-title">🔍 Problema & Motivação no Mundo Real</h2>
+    <h2 class="section-title">Problema & Motivação no Mundo Real</h2>
     <div class="info-card">
       <p style="white-space: pre-line; line-height: 1.65">${p.problemAndMotivation}</p>
     </div>
 
     <!-- Solução Arquitetural -->
-    <h2 class="section-title">💡 Solução Arquitetural</h2>
+    <h2 class="section-title">Solução Arquitetural</h2>
     <div class="info-card" style="border-left: 4px solid var(--accent-primary)">
       <p style="white-space: pre-line; line-height: 1.65">${p.solution}</p>
     </div>
 
     <!-- Estrutura & Participantes -->
-    <h2 class="section-title">🏗️ Estrutura & Participantes</h2>
+    <h2 class="section-title">Estrutura & Participantes</h2>
     <div class="info-card">
       <h5>Participantes do Padrão:</h5>
       <ul style="padding-left: 1.25rem; font-size: 0.92rem; margin: 0.75rem 0; display: flex; flex-direction: column; gap: 0.5rem">
@@ -513,7 +513,7 @@ function renderPatternPage(container, patternId) {
     </div>
 
     <!-- Aplicabilidade -->
-    <h2 class="section-title">🎯 Aplicabilidade (Quando Usar e Quando Evitar)</h2>
+    <h2 class="section-title">Aplicabilidade (Quando Usar e Quando Evitar)</h2>
     <div class="info-card">
       <ul style="padding-left: 1.25rem; font-size: 0.92rem; display: flex; flex-direction: column; gap: 0.5rem">
         ${p.applicability.map(app => `<li>${app}</li>`).join("")}
@@ -521,16 +521,16 @@ function renderPatternPage(container, patternId) {
     </div>
 
     <!-- Consequências & Trade-offs -->
-    <h2 class="section-title">⚖️ Consequências & Trade-offs</h2>
+    <h2 class="section-title">Consequências & Trade-offs</h2>
     <div class="tradeoffs-container">
       <div class="tradeoff-card tradeoff-pros">
-        <h5>✅ Vantagens & Benefícios</h5>
+        <h5>Vantagens & Benefícios</h5>
         <ul>
           ${p.consequences.pros.map(pro => `<li>${pro}</li>`).join("")}
         </ul>
       </div>
       <div class="tradeoff-card tradeoff-cons">
-        <h5>⚠️ Desvantagens & Custos</h5>
+        <h5>Desvantagens & Custos</h5>
         <ul>
           ${p.consequences.cons.map(con => `<li>${con}</li>`).join("")}
         </ul>
@@ -538,7 +538,7 @@ function renderPatternPage(container, patternId) {
     </div>
 
     <!-- Notas de Implementação -->
-    <h2 class="section-title">🛠️ Notas de Implementação & Dicas dos Autores</h2>
+    <h2 class="section-title">Notas de Implementação & Dicas dos Autores</h2>
     <div class="info-card">
       <ul style="padding-left: 1.25rem; font-size: 0.92rem; display: flex; flex-direction: column; gap: 0.5rem">
         ${p.implementationNotes.map(note => `<li>${note}</li>`).join("")}
@@ -546,7 +546,7 @@ function renderPatternPage(container, patternId) {
     </div>
 
     <!-- Exemplos de Código Multi-Linguagem -->
-    <h2 class="section-title">💻 Exemplos de Código Prático</h2>
+    <h2 class="section-title">Exemplos de Código Prático</h2>
     <div class="code-block-wrapper" id="pattern-code-box">
       <div class="code-header">
         <div class="code-tabs">
@@ -555,13 +555,13 @@ function renderPatternPage(container, patternId) {
           <button class="code-tab-btn" data-lang="python">Python</button>
           <button class="code-tab-btn" data-lang="gofOriginal">C++ (GoF Original)</button>
         </div>
-        <button class="copy-btn" id="btn-copy-code">📋 Copiar Código</button>
+        <button class="copy-btn" id="btn-copy-code">${icons.copy} <span>Copiar Código</span></button>
       </div>
       <pre class="code-content"><code id="code-snippet-el"></code></pre>
     </div>
 
     <!-- Usos no Mundo Real -->
-    <h2 class="section-title">🌍 Usos Conhecidos & Frameworks Modernos</h2>
+    <h2 class="section-title">Usos Conhecidos & Frameworks Modernos</h2>
     <div class="info-card">
       <ul style="padding-left: 1.25rem; font-size: 0.92rem; display: flex; flex-direction: column; gap: 0.5rem">
         ${p.realWorldUses.map(use => `<li>${use}</li>`).join("")}
@@ -569,7 +569,7 @@ function renderPatternPage(container, patternId) {
     </div>
 
     <!-- Padrões Relacionados -->
-    <h2 class="section-title">🔗 Padrões Relacionados & Diferenças</h2>
+    <h2 class="section-title">Padrões Relacionados & Diferenças</h2>
     <div class="info-card">
       <ul style="padding-left: 1.25rem; font-size: 0.92rem; display: flex; flex-direction: column; gap: 0.5rem">
         ${p.relatedPatterns.map(rel => `<li>${rel}</li>`).join("")}
@@ -578,16 +578,16 @@ function renderPatternPage(container, patternId) {
 
     <!-- Campo de Prática Interativo (Se houver) -->
     ${p.hasPlayground && labs[p.playgroundId] ? `
-      <h2 class="section-title">🧪 Campo de Prática Interativo (Live Playground)</h2>
+      <h2 class="section-title">Campo de Prática Interativo (Live Playground)</h2>
       <div id="inline-lab-container"></div>
     ` : ''}
 
     <!-- Quiz de Fixação -->
-    <h2 class="section-title">🧠 Teste Seus Conhecimentos</h2>
+    <h2 class="section-title">Teste Seus Conhecimentos</h2>
     <div id="inline-quiz-container"></div>
 
     <!-- Referências Bibliográficas -->
-    <h2 class="section-title">📚 Referências Bibliográficas</h2>
+    <h2 class="section-title">Referências Bibliográficas</h2>
     <div class="info-card">
       <ul style="padding-left: 1.25rem; font-size: 0.88rem; color: var(--text-secondary)">
         ${p.references.map(ref => `<li>${ref}</li>`).join("")}
@@ -598,16 +598,16 @@ function renderPatternPage(container, patternId) {
     <div class="page-action-header mt-5">
       <div class="pager-buttons">
         ${prevPattern ? `
-          <a href="#/padrao/${prevPattern.id}" class="pager-btn">❮ Anterior: ${prevPattern.name}</a>
+          <a href="#/padrao/${prevPattern.id}" class="pager-btn">← Anterior: ${prevPattern.name}</a>
         ` : `
-          <a href="#/" class="pager-btn">❮ Início</a>
+          <a href="#/" class="pager-btn">← Início</a>
         `}
       </div>
       <div class="pager-buttons">
         ${nextPattern ? `
-          <a href="#/padrao/${nextPattern.id}" class="pager-btn next-btn">Próximo: ${nextPattern.name} ❯</a>
+          <a href="#/padrao/${nextPattern.id}" class="pager-btn next-btn">Próximo: ${nextPattern.name} →</a>
         ` : `
-          <a href="#/quizzes" class="pager-btn next-btn">Ir para Quizzes ❯</a>
+          <a href="#/quizzes" class="pager-btn next-btn">Ir para Quizzes →</a>
         `}
       </div>
     </div>
@@ -619,10 +619,10 @@ function renderPatternPage(container, patternId) {
     const isNowStudied = togglePatternStudied(p.id);
     if (isNowStudied) {
       btnBookmark.classList.add("marked");
-      btnBookmark.textContent = "✓ Marcado como Estudado";
+      btnBookmark.innerHTML = `${icons.bookmarkCheck} <span>Marcado como Estudado</span>`;
     } else {
       btnBookmark.classList.remove("marked");
-      btnBookmark.textContent = "🔖 Marcar como Estudado";
+      btnBookmark.innerHTML = `${icons.bookmark} <span>Marcar como Estudado</span>`;
     }
   });
 
@@ -646,8 +646,8 @@ function renderPatternPage(container, patternId) {
 
   btnCopy.addEventListener("click", () => {
     navigator.clipboard.writeText(codeEl.textContent);
-    btnCopy.textContent = "✅ Copiado!";
-    setTimeout(() => { btnCopy.textContent = "📋 Copiar Código"; }, 2000);
+    btnCopy.innerHTML = `${icons.check} <span>Copiado!</span>`;
+    setTimeout(() => { btnCopy.innerHTML = `${icons.copy} <span>Copiar Código</span>`; }, 2000);
   });
 
   switchCode("typescript");
@@ -680,23 +680,23 @@ function renderPatternPage(container, patternId) {
 function renderLabsHubPage(container) {
   container.innerHTML = `
     <div class="page-action-header">
-      <a href="#/padrao/abstract-factory" class="pager-btn">❮ Ir para Padrões</a>
-      <a href="#/quizzes" class="pager-btn next-btn">Ir para Quizzes ❯</a>
+      <a href="#/padrao/abstract-factory" class="pager-btn">← Ir para Padrões</a>
+      <a href="#/quizzes" class="pager-btn next-btn">Ir para Quizzes →</a>
     </div>
 
-    <h1 class="page-title">🧪 Central de Laboratórios & Campos de Prática</h1>
+    <h1 class="page-title">Central de Laboratórios & Campos de Prática</h1>
     <p class="page-subtitle">Experimente e interaja com simulações dinâmicas em tempo real dos principais padrões de projeto do GoF.</p>
 
     <div class="factory-selector-tabs mb-4" id="labs-selector-tabs">
-      <button class="btn btn-tab active" data-lab="observer-lab">📊 Observer (Ações)</button>
-      <button class="btn btn-tab" data-lab="strategy-lab">📦 Strategy (Frete)</button>
-      <button class="btn btn-tab" data-lab="decorator-lab">☕ Decorator (Cafeteria)</button>
-      <button class="btn btn-tab" data-lab="command-lab">↩️ Command (Undo/Redo)</button>
-      <button class="btn btn-tab" data-lab="state-lab">🔀 State (Conexão TCP)</button>
-      <button class="btn btn-tab" data-lab="factory-lab">🪟 Abstract Factory (UI)</button>
-      <button class="btn btn-tab" data-lab="composite-lab">📁 Composite (Árvore)</button>
-      <button class="btn btn-tab" data-lab="chain-lab">⛓️ Chain of Responsibility</button>
-      <button class="btn btn-tab" data-lab="adapter-lab">🔌 Adapter (JSON/XML)</button>
+      <button class="btn btn-tab active" data-lab="observer-lab">Observer (Ações)</button>
+      <button class="btn btn-tab" data-lab="strategy-lab">Strategy (Frete)</button>
+      <button class="btn btn-tab" data-lab="decorator-lab">Decorator (Cafeteria)</button>
+      <button class="btn btn-tab" data-lab="command-lab">Command (Undo/Redo)</button>
+      <button class="btn btn-tab" data-lab="state-lab">State (Conexão TCP)</button>
+      <button class="btn btn-tab" data-lab="factory-lab">Abstract Factory (UI)</button>
+      <button class="btn btn-tab" data-lab="composite-lab">Composite (Árvore)</button>
+      <button class="btn btn-tab" data-lab="chain-lab">Chain of Responsibility</button>
+      <button class="btn btn-tab" data-lab="adapter-lab">Adapter (JSON/XML)</button>
     </div>
 
     <div id="active-lab-render-area"></div>
@@ -727,11 +727,11 @@ function renderLabsHubPage(container) {
 function renderReferencesPage(container) {
   container.innerHTML = `
     <div class="page-action-header">
-      <a href="#/quizzes" class="pager-btn">❮ Anterior: Quizzes</a>
-      <a href="#/" class="pager-btn next-btn">Voltar ao Início ❯</a>
+      <a href="#/quizzes" class="pager-btn">← Anterior: Quizzes</a>
+      <a href="#/" class="pager-btn next-btn">Voltar ao Início →</a>
     </div>
 
-    <h1 class="page-title">📚 Referências Bibliográficas & Literatura Recomendada</h1>
+    <h1 class="page-title">Referências Bibliográficas & Literatura Recomendada</h1>
     <p class="page-subtitle">Obras fundamentais citadas no livro GoF e literatura moderna que expandiu os conceitos de design patterns.</p>
 
     <div class="grid-2 mt-4">

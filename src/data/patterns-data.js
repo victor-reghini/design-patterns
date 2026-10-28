@@ -38,7 +38,7 @@ Em seguida, criamos fábricas concretas para cada variação de estilo ('ModernF
       "Quando o sistema deve ser independente de como seus produtos são criados, compostos ou representados.",
       "Quando o sistema deve ser configurado com uma família de múltiplos produtos que precisam ser usados em conjunto.",
       "Quando você quer fornecer uma biblioteca de classes de produtos revelando apenas suas interfaces, mantendo as implementações protegidas.",
-      "⚠️ NÃO USE: Se a família de produtos precisa adicionar constantemente novos tipos de produtos (ex: adicionar 'createLamp()'), pois isso força a alterar a interface AbstractFactory e todas as fábricas concretas."
+      "CUIDADO / QUANDO NÃO USAR: Se a família de produtos precisa adicionar constantemente novos tipos de produtos (ex: adicionar 'createLamp()'), pois isso força a alterar a interface AbstractFactory e todas as fábricas concretas."
     ],
     consequences: {
       pros: [
@@ -76,11 +76,11 @@ interface GUIFactory {
 
 // Família Windows
 class WindowsButton implements Button {
-  render = () => "🪟 [Botão Windows 11 Estilo Fluent]";
+  render = () => "[Botão Windows 11 Estilo Fluent]";
   onClick = () => console.log("Clique Windows!");
 }
 class WindowsCheckbox implements Checkbox {
-  render = () => "☑️ [Checkbox Windows]";
+  render = () => "[Checkbox Windows]";
   toggle = () => console.log("Marcado Windows");
 }
 class WindowsFactory implements GUIFactory {
@@ -90,11 +90,11 @@ class WindowsFactory implements GUIFactory {
 
 // Família macOS
 class MacButton implements Button {
-  render = () => "🍎 (Botão macOS Estilo Aqua)";
+  render = () => "[Botão macOS Estilo Aqua]";
   onClick = () => console.log("Clique macOS!");
 }
 class MacCheckbox implements Checkbox {
-  render = () => "🔘 (Checkbox macOS)";
+  render = () => "[Checkbox macOS]";
   toggle = () => console.log("Marcado macOS");
 }
 class MacFactory implements GUIFactory {
@@ -380,11 +380,11 @@ interface Transport {
 }
 
 class Truck implements Transport {
-  deliver = () => "🚚 Entrega terrestre em caixa por caminhão";
+  deliver = () => "[Caminhão] Entrega terrestre em caixa por caminhão";
 }
 
 class Ship implements Transport {
-  deliver = () => "🚢 Entrega marítima em contêiner por navio";
+  deliver = () => "[Navio] Entrega marítima em contêiner por navio";
 }
 
 // Creator com Factory Method
@@ -595,7 +595,7 @@ Um método estático global ('getInstance()') fornece acesso controlado a essa i
     applicability: [
       "Quando deve haver exatamente uma instância de uma classe, acessível por um ponto bem conhecido para todos os clientes.",
       "Quando essa instância precisa ser extensível por subclasses sem modificar o código do cliente.",
-      "⚠️ CUIDADO: O Singleton é frequentemente considerado um 'Anti-Padrão' se mal utilizado, pois introduz estado global oculto e dificulta testes unitários (acoplamento temporal e concorrência)."
+      "CUIDADO / TRADE-OFF: O Singleton é frequentemente considerado um 'Anti-Padrão' se mal utilizado, pois introduz estado global oculto e dificulta testes unitários (acoplamento temporal e concorrência)."
     ],
     consequences: {
       pros: [
@@ -1012,7 +1012,7 @@ interface FileSystemItem {
 class FileItem implements FileSystemItem {
   constructor(public name: string, private sizeInKb: number) {}
   getSize = (): number => this.sizeInKb;
-  render = (indent = ""): string => \`\${indent}📄 \${this.name} (\${this.sizeInKb} KB)\`;
+  render = (indent = ""): string => \`\${indent}[Arquivo] \${this.name} (\${this.sizeInKb} KB)\`;
 }
 
 // Composite (Nó Composto)
@@ -1031,7 +1031,7 @@ class FolderItem implements FileSystemItem {
   }
 
   render(indent = ""): string {
-    const lines = [\`\${indent}📁 \${this.name}/ [Total: \${this.getSize()} KB]\`];
+    const lines = [\`\${indent}[Pasta] \${this.name}/ [Total: \${this.getSize()} KB]\`];
     for (const child of this.children) {
       lines.push(child.render(indent + "  "));
     }
@@ -1267,20 +1267,20 @@ Essa fachada orquestra os objetos internos do subsistema na ordem correta, servi
     codeExamples: {
       typescript: `// Classes complexas do subsistema multimídia
 class TV {
-  on = () => "📺 TV ligada";
-  setChannel = (c: number) => \`📺 Canal sintonizado em \${c}\`;
-  off = () => "📺 TV desligada";
+  on = () => "[TV] Ligada";
+  setChannel = (c: number) => \`[TV] Canal sintonizado em \${c}\`;
+  off = () => "[TV] Desligada";
 }
 
 class SoundSystem {
-  on = () => "🔊 Som ativado";
-  setVolume = (v: number) => \`🔊 Volume ajustado para \${v}%\`;
-  off = () => "🔊 Som desligado";
+  on = () => "[Som] Ativado";
+  setVolume = (v: number) => \`[Som] Volume ajustado para \${v}%\`;
+  off = () => "[Som] Desligado";
 }
 
 class StreamingService {
-  login = () => "🎬 Sessão iniciada no Streaming";
-  playMovie = (title: string) => \`🎬 Reproduzindo: '\${title}'\`;
+  login = () => "[Streaming] Sessão iniciada";
+  playMovie = (title: string) => \`[Streaming] Reproduzindo: '\${title}'\`;
 }
 
 // A Fachada (Facade)
@@ -1293,7 +1293,7 @@ class HomeCinemaFacade {
 
   watchMovie(title: string): string[] {
     return [
-      "🍿 Preparando sessão de cinema...",
+      "Preparando sessão de cinema...",
       this.tv.on(),
       this.sound.on(),
       this.sound.setVolume(75),
@@ -1657,27 +1657,27 @@ Ao receber a solicitação, se puder tratá-la, ele a resolve; caso contrário, 
 class TeamLead extends Approver {
   processRequest(amount: number): string {
     if (amount <= 500) {
-      return \`✅ Aprovado pelo Líder de Equipe: R$ \${amount}\`;
+      return \`[Aprovado] Líder de Equipe: R$ \${amount}\`;
     }
-    return this.next ? this.next.processRequest(amount) : "❌ Rejeitado: Sem autoridade";
+    return this.next ? this.next.processRequest(amount) : "[Rejeitado] Sem autoridade";
   }
 }
 
 class Manager extends Approver {
   processRequest(amount: number): string {
     if (amount <= 5000) {
-      return \`✅ Aprovado pelo Gerente: R$ \${amount}\`;
+      return \`[Aprovado] Gerente: R$ \${amount}\`;
     }
-    return this.next ? this.next.processRequest(amount) : "❌ Rejeitado: Sem autoridade";
+    return this.next ? this.next.processRequest(amount) : "[Rejeitado] Sem autoridade";
   }
 }
 
 class Director extends Approver {
   processRequest(amount: number): string {
     if (amount <= 50000) {
-      return \`✅ Aprovado pela Diretoria Executiva: R$ \${amount}\`;
+      return \`[Aprovado] Diretoria Executiva: R$ \${amount}\`;
     }
-    return this.next ? this.next.processRequest(amount) : "❌ Rejeitado: Valor acima do teto corporativo";
+    return this.next ? this.next.processRequest(amount) : "[Rejeitado] Valor acima do teto corporativo";
   }
 }
 
@@ -2455,14 +2455,14 @@ class StockMarket {
 // Observadores Concretos
 class StockDisplay implements StockObserver {
   update(symbol: string, price: number): void {
-    console.log(\`📊 [Painel Visual] Cotação atualizada: \${symbol} = R$ \${price.toFixed(2)}\`);
+    console.log(\`[Painel Visual] Cotação atualizada: \${symbol} = R$ \${price.toFixed(2)}\`);
   }
 }
 
 class PriceAlertBot implements StockObserver {
   update(symbol: string, price: number): void {
     if (price > 100) {
-      console.log(\`🚨 [Alerta Bot] \${symbol} ultrapassou R$ 100! Valor: R$ \${price.toFixed(2)}\`);
+      console.log(\`[Alerta Bot] \${symbol} ultrapassou R$ 100! Valor: R$ \${price.toFixed(2)}\`);
     }
   }
 }`,
@@ -2569,33 +2569,33 @@ class AudioPlayer {
 class StoppedState implements AudioPlayerState {
   play(player: AudioPlayer): string {
     player.setState(new PlayingState());
-    return "▶️ Iniciando reprodução da música...";
+    return "Iniciando reprodução da música...";
   }
-  pause(): string { return "⚠️ Não é possível pausar: reprodutor parado."; }
-  stop(): string { return "⏹️ Já está parado."; }
+  pause(): string { return "Não é possível pausar: reprodutor parado."; }
+  stop(): string { return "Já está parado."; }
 }
 
 class PlayingState implements AudioPlayerState {
-  play(): string { return "⚠️ Já está tocando!"; }
+  play(): string { return "Já está tocando!"; }
   pause(player: AudioPlayer): string {
     player.setState(new PausedState());
-    return "⏸️ Música pausada.";
+    return "Música pausada.";
   }
   stop(player: AudioPlayer): string {
     player.setState(new StoppedState());
-    return "⏹️ Reprodução interrompida.";
+    return "Reprodução interrompida.";
   }
 }
 
 class PausedState implements AudioPlayerState {
   play(player: AudioPlayer): string {
     player.setState(new PlayingState());
-    return "▶️ Retomando música de onde parou...";
+    return "Retomando música de onde parou...";
   }
-  pause(): string { return "⚠️ Já está em pausa."; }
+  pause(): string { return "Já está em pausa."; }
   stop(player: AudioPlayer): string {
     player.setState(new StoppedState());
-    return "⏹️ Parando do estado de pausa.";
+    return "Parando do estado de pausa.";
   }
 }`,
       java: `public class TCPConnection {
