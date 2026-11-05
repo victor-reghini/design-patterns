@@ -67,11 +67,11 @@ export const uiStrings = {
     groupPractice: "PRÁTICA & AVALIAÇÃO",
 
     // Nav items
-    navHome: "Explorador & Catálogo (23)",
-    navPrinciples: "Princípios O.O. (Cap. 1)",
+    navHome: "Explorador & Catálogo",
+    navPrinciples: "Princípios O.O.",
     navRedesign: "8 Causas de Reformulação",
     navLexi: "Estudo de Caso Lexi",
-    navMatrix: "Matriz GoF (Tabela 1.1)",
+    navMatrix: "Matriz GoF",
     navRelationships: "Grafo de Relações",
     navLabs: "Laboratórios Interativos",
     navQuizzes: "Quizzes de Certificação",
@@ -181,11 +181,11 @@ export const uiStrings = {
     groupPractice: "PRACTICE & EVALUATION",
 
     // Nav items
-    navHome: "Pattern Explorer & Catalog (23)",
-    navPrinciples: "O.O. Principles (Ch. 1)",
+    navHome: "Pattern Explorer & Catalog",
+    navPrinciples: "O.O. Principles",
     navRedesign: "8 Causes of Redesign",
     navLexi: "Lexi Editor Case Study",
-    navMatrix: "GoF Matrix (Table 1.1)",
+    navMatrix: "GoF Matrix",
     navRelationships: "Pattern Relationships Graph",
     navLabs: "Interactive Sandboxes",
     navQuizzes: "Certification Quizzes",
@@ -295,11 +295,11 @@ export const uiStrings = {
     groupPractice: "PRÁCTICA Y EVALUACIÓN",
 
     // Nav items
-    navHome: "Explorador y Catálogo (23)",
-    navPrinciples: "Principios O.O. (Cap. 1)",
+    navHome: "Explorador y Catálogo",
+    navPrinciples: "Principios O.O.",
     navRedesign: "8 Causas de Rediseño",
     navLexi: "Caso de Estudio Lexi",
-    navMatrix: "Matriz GoF (Tabla 1.1)",
+    navMatrix: "Matriz GoF",
     navRelationships: "Grafo de Relaciones",
     navLabs: "Laboratorios Interactivos",
     navQuizzes: "Quizzes de Certificación",

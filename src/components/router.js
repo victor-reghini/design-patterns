@@ -7,6 +7,7 @@ import { renderSingleQuiz, renderQuizzesPage } from "./quiz-engine.js";
 import { labs } from "./labs.js";
 import { getStudiedPatterns, togglePatternStudied } from "./sidebar.js";
 import { renderPatternVisualizer, stopActiveVisualizerTimer } from "./pattern-visualizer.js";
+import { highlightCode } from "../utils/code-highlighter.js";
 import { icons } from "./icons.js";
 
 function getPatternLocalized(p) {
@@ -531,7 +532,7 @@ function renderPatternPage(container, patternId) {
       </div>
 
       <h2 class="section-title">${t("solutionTitle")}</h2>
-      <div class="info-card" style="border-left: 4px solid var(--accent-primary)">
+      <div class="info-card">
         <p style="white-space: pre-line; line-height: 1.65">${loc.solution}</p>
       </div>
 
@@ -690,7 +691,8 @@ function renderPatternPage(container, patternId) {
     const activeBtn = container.querySelector(`.code-tab-btn[data-lang="${langKey}"]`);
     if (activeBtn) activeBtn.classList.add("active");
     if (codeEl) {
-      codeEl.textContent = p.codeExamples[langKey] || "// Code snippet unavailable.";
+      const rawCode = p.codeExamples[langKey] || "// Code snippet unavailable.";
+      codeEl.innerHTML = highlightCode(rawCode, langKey);
     }
   }
 

@@ -114,13 +114,13 @@
 
 .feedback-correct {
   background-color: var(--success-bg);
-  border-left: 4px solid var(--success);
+  border: 1px solid var(--border-color);
   color: var(--text-primary);
 }
 
 .feedback-wrong {
   background-color: var(--danger-bg);
-  border-left: 4px solid var(--danger);
+  border: 1px solid var(--border-color);
   color: var(--text-primary);
 }
 
