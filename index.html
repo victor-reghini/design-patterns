@@ -1,79 +1,99 @@
 <!DOCTYPE html>
-<html lang="pt-BR" data-theme="light">
+<html lang="pt-BR" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Padrões de Projeto (GoF) • Guia Completo & Interativo</title>
-  <meta name="description" content="Guia completo, aprofundado e interativo do clássico livro 'Padrões de Projeto: Soluções Reutilizáveis de Software Orientado a Objetos' (Gang of Four - GoF), com exemplos modernos, playgrounds e quizzes." />
+  <title>Pattern Explorer • Learn How GoF Design Patterns Work</title>
+  <meta name="description" content="Interactive visual explorer for all 23 Gang of Four (GoF) Design Patterns with step-by-step message animations, memory frame hex decoding, multi-language support, and live sandboxes." />
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet" />
 
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%232563eb%22 stroke-width=%222%22><rect x=%223%22 y=%223%22 width=%2218%22 height=%2218%22 rx=%224%22/><path d=%22M3 9h18M9 21V9%22/></svg>" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%233b82f6%22 stroke-width=%222%22><rect x=%223%22 y=%223%22 width=%2218%22 height=%2218%22 rx=%224%22/><path d=%22M3 9h18M9 21V9%22/></svg>" />
 </head>
 <body>
   <div class="app-container">
-    <!-- Top Header -->
+    <!-- Top Workspace Header (Protocol Explorer Style) -->
     <header class="top-header">
       <div class="header-left">
-        <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Abrir menu de navegação">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        <button type="button" class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Menu" aria-expanded="false">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+          <span class="mobile-menu-label" id="mobile-menu-label">Menu</span>
         </button>
+
         <a href="#/" class="logo-brand">
-          <div class="logo-icon">DP</div>
-          <span>Padrões de Projeto <small style="font-weight: 500; color: var(--accent-primary); font-size: 0.8rem">GoF</small></span>
+          <div class="logo-icon">PE</div>
+          <div class="logo-text-stack">
+            <span class="logo-title" id="brand-title-el">PATTERN EXPLORER</span>
+            <span class="logo-subtitle" id="brand-subtitle-el">LEARN HOW DESIGN PATTERNS WORK</span>
+          </div>
         </a>
+
+        <div class="header-active-telemetry" id="header-active-module" aria-live="polite">
+          <span class="header-status-dot"></span>
+          <span class="header-now-label">OVERVIEW:</span>
+          <strong>23 GOF PATTERNS</strong>
+        </div>
       </div>
 
-      <nav class="top-nav">
-        <a href="#/" class="active">Visão Geral</a>
-        <a href="#/principios">Princípios O.O.</a>
-        <a href="#/lexi">O Caso Lexi</a>
-        <a href="#/matriz">Matriz GoF</a>
-        <a href="#/laboratorios">Laboratórios</a>
-        <a href="#/quizzes">Quizzes</a>
-        <a href="#/referencias">Referências</a>
-      </nav>
-
       <div class="header-right">
-        <button class="theme-toggle-btn" id="theme-toggle-btn" title="Alternar Modo Escuro" aria-label="Alternar tema">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        <!-- Multi-language Selector -->
+        <div class="lang-selector-wrap">
+          <label for="lang-select" class="sr-only" id="lang-select-label">Select language</label>
+          <select id="lang-select" class="lang-select" aria-label="Select language">
+            <option value="pt">PT • Português</option>
+            <option value="en">EN • English</option>
+            <option value="es">ES • Español</option>
+          </select>
+        </div>
+
+        <!-- Light / Dark Theme Toggle -->
+        <button type="button" class="theme-toggle-btn" id="theme-toggle-btn" aria-label="Toggle theme">
+          <span class="theme-btn-label">Light Mode</span>
         </button>
+
+        <!-- GitHub Profile Link -->
+        <a
+          href="https://github.com/victor-reghini"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="header-profile-link"
+          id="header-profile-link"
+          title="Victor Reghini (@victor-reghini) on GitHub"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.5.4.9 1.1.9 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3"></path></svg>
+          <span class="profile-link-text">Victor Reghini</span>
+        </a>
       </div>
 
       <div class="reading-progress-bar" id="reading-progress"></div>
     </header>
 
-    <!-- Layout Principal -->
+    <!-- Main Multi-Pane Workspace -->
     <div class="main-wrapper">
-      <!-- Menu Lateral Esquerdo (Inspirado no print da documentação) -->
-      <aside class="sidebar" id="app-sidebar" aria-label="Menu lateral de navegação dos padrões">
-        <!-- Preenchido via sidebar.js -->
-      </aside>
-
-      <!-- Conteúdo Principal -->
-      <main class="content-area" id="main-content-area" role="main">
-        <!-- Preenchido via router.js -->
-      </main>
+      <aside class="sidebar" id="app-sidebar" aria-label="Design Patterns Navigation Sidebar"></aside>
+      <main class="content-area" id="main-content-area" role="main"></main>
     </div>
 
     <!-- Footer -->
     <footer class="app-footer">
       <div class="footer-content">
-        <p><strong>Padrões de Projeto: Soluções Reutilizáveis de Software Orientado a Objetos</strong></p>
-        <p>Erich Gamma • Richard Helm • Ralph Johnson • John Vlissides (Gang of Four)</p>
-        <div class="footer-links">
-          <a href="#/">Início</a>
-          <a href="#/lexi">Estudo de Caso Lexi</a>
-          <a href="#/laboratorios">Campos de Prática</a>
-          <a href="#/quizzes">Quizzes de Fixação</a>
-          <a href="#/referencias">Referências</a>
+        <div class="footer-brand-row">
+          <strong>PATTERN EXPLORER • GANG OF FOUR (GoF) ARCHITECTURE VISUALIZER</strong>
+          <span>Erich Gamma • Richard Helm • Ralph Johnson • John Vlissides</span>
         </div>
-        <p style="font-size: 0.78rem; margin-top: 0.5rem; color: var(--text-muted)">
-          Portal educacional completo desenvolvido com modo claro primário, modo escuro nativo e recursos de alta interatividade.
-        </p>
+        <div class="footer-links">
+          <a href="#/" id="footer-link-home">Catalog (23)</a>
+          <a href="#/matriz" id="footer-link-matrix">GoF Matrix</a>
+          <a href="#/lexi" id="footer-link-lexi">Lexi Case Study</a>
+          <a href="#/laboratorios" id="footer-link-labs">Interactive Labs</a>
+          <a href="#/quizzes" id="footer-link-quizzes">Quizzes</a>
+          <a href="https://github.com/victor-reghini" target="_blank" rel="noopener noreferrer" class="footer-github-link">
+            GitHub: @victor-reghini ↗
+          </a>
+        </div>
       </div>
     </footer>
   </div>

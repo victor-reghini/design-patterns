@@ -134,7 +134,7 @@
 .quiz-score-card {
   text-align: center;
   padding: 2.5rem;
-  background: linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-sidebar) 100%);
+  background-color: var(--bg-surface-elevated);
   border-radius: var(--radius-lg);
   border: 1px solid var(--border-color);
 }

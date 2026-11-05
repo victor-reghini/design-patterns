@@ -4,79 +4,90 @@ import "./styles/components.css";
 import "./styles/labs.css";
 import "./styles/quiz.css";
 
-import { initTheme, toggleTheme } from "./components/theme.js";
+import { initTheme, toggleTheme, updateThemeButton } from "./components/theme.js";
 import { renderSidebar } from "./components/sidebar.js";
 import { handleRoute } from "./components/router.js";
+import { getLang, setLang, onLangChange, t } from "./data/i18n.js";
 
 document.addEventListener("DOMContentLoaded", () => {
-  // 1. Inicializa o Tema (Claro por padrão, com suporte a Escuro)
   initTheme();
 
+  const sidebarEl = document.getElementById("app-sidebar");
+  const contentArea = document.getElementById("main-content-area");
+  const mobileMenuBtn = document.getElementById("mobile-menu-btn");
+  const readingProgressBar = document.getElementById("reading-progress");
   const themeToggleBtn = document.getElementById("theme-toggle-btn");
+  const langSelect = document.getElementById("lang-select");
+
+  if (langSelect) {
+    langSelect.value = getLang();
+    langSelect.addEventListener("change", e => {
+      setLang(e.target.value);
+    });
+  }
+
   if (themeToggleBtn) {
     themeToggleBtn.addEventListener("click", () => {
       toggleTheme();
     });
   }
 
-  // 2. Elementos DOM do Layout
-  const sidebarEl = document.getElementById("app-sidebar");
-  const contentArea = document.getElementById("main-content-area");
-  const mobileMenuBtn = document.getElementById("mobile-menu-btn");
-  const readingProgressBar = document.getElementById("reading-progress");
+  function syncStaticLabels() {
+    const brandTitle = document.getElementById("brand-title-el");
+    const brandSub = document.getElementById("brand-subtitle-el");
+    const menuLabel = document.getElementById("mobile-menu-label");
+    const fHome = document.getElementById("footer-link-home");
+    const fMatrix = document.getElementById("footer-link-matrix");
+    const fLexi = document.getElementById("footer-link-lexi");
+    const fLabs = document.getElementById("footer-link-labs");
+    const fQuizzes = document.getElementById("footer-link-quizzes");
 
-  // 3. Renderiza o Menu Lateral (Sidebar)
+    if (brandTitle) brandTitle.textContent = t("brandTitle");
+    if (brandSub) brandSub.textContent = t("brandSubtitle");
+    if (menuLabel) menuLabel.textContent = t("menuLabel");
+    if (fHome) fHome.textContent = t("navHome");
+    if (fMatrix) fMatrix.textContent = t("navMatrix");
+    if (fLexi) fLexi.textContent = t("navLexi");
+    if (fLabs) fLabs.textContent = t("navLabs");
+    if (fQuizzes) fQuizzes.textContent = t("navQuizzes");
+
+    updateThemeButton();
+  }
+
   function updateApp() {
     const currentHash = window.location.hash || "#/";
+    syncStaticLabels();
     renderSidebar(sidebarEl, currentHash);
     handleRoute(contentArea);
 
-    // Fecha menu mobile após clique se aberto
-    if (sidebarEl.classList.contains("mobile-open")) {
+    if (sidebarEl && sidebarEl.classList.contains("mobile-open")) {
       sidebarEl.classList.remove("mobile-open");
+      if (mobileMenuBtn) mobileMenuBtn.setAttribute("aria-expanded", "false");
     }
-
-    // Atualiza links ativos na top-nav
-    document.querySelectorAll(".top-nav a").forEach(link => {
-      const href = link.getAttribute("href");
-      if (href === currentHash || (href === "#/" && (currentHash === "" || currentHash === "#/livro"))) {
-        link.classList.add("active");
-      } else {
-        link.classList.remove("active");
-      }
-    });
-
-    adjustSidebarHeight();
   }
 
-  // 4. Mobile Menu Drawer
-  if (mobileMenuBtn) {
+  onLangChange(() => {
+    updateApp();
+  });
+
+  if (mobileMenuBtn && sidebarEl) {
     mobileMenuBtn.addEventListener("click", () => {
-      sidebarEl.classList.toggle("mobile-open");
+      const isOpen = sidebarEl.classList.toggle("mobile-open");
+      mobileMenuBtn.setAttribute("aria-expanded", isOpen ? "true" : "false");
     });
   }
 
-  // 5. Ajuste Dinâmico da Sidebar (Permanecer rigorosamente acima do Footer)
-  const footerEl = document.querySelector(".app-footer");
-  function adjustSidebarHeight() {
-    if (!sidebarEl) return;
-    if (window.innerWidth <= 992) {
-      sidebarEl.style.maxHeight = "";
-      return;
+  // Close mobile drawer on Escape
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape" && sidebarEl && sidebarEl.classList.contains("mobile-open")) {
+      sidebarEl.classList.remove("mobile-open");
+      if (mobileMenuBtn) {
+        mobileMenuBtn.setAttribute("aria-expanded", "false");
+        mobileMenuBtn.focus();
+      }
     }
-    if (!footerEl) return;
-    const footerRect = footerEl.getBoundingClientRect();
-    const windowHeight = window.innerHeight;
-    const headerHeight = 64; // var(--header-height)
-    if (footerRect.top < windowHeight) {
-      const available = Math.max(120, footerRect.top - headerHeight);
-      sidebarEl.style.maxHeight = `${available}px`;
-    } else {
-      sidebarEl.style.maxHeight = `calc(100vh - var(--header-height))`;
-    }
-  }
+  });
 
-  // 6. Barra de Leitura Superior no Scroll & Ajuste da Sidebar
   window.addEventListener("scroll", () => {
     const scrollTop = window.scrollY;
     const docHeight = document.documentElement.scrollHeight - window.innerHeight;
@@ -84,14 +95,9 @@ document.addEventListener("DOMContentLoaded", () => {
       const scrollPercent = (scrollTop / docHeight) * 100;
       readingProgressBar.style.width = `${Math.min(100, Math.max(0, scrollPercent))}%`;
     }
-    adjustSidebarHeight();
   }, { passive: true });
 
-  window.addEventListener("resize", adjustSidebarHeight, { passive: true });
-
-  // 7. Listener de Navegação Hash
   window.addEventListener("hashchange", updateApp);
 
-  // Inicialização inicial
   updateApp();
 });

@@ -1,20 +1,67 @@
-/**
- * Roteador SPA (Single Page Application) Baseado em Hash
- * Renderiza dinamicamente as páginas individuais de cada padrão, visão geral, Lexi, labs e quizzes.
- */
-
 import { patternsData } from "../data/patterns-data.js";
+import { patternAnimations } from "../data/pattern-animations.js";
 import { bookOverview } from "../data/book-overview.js";
 import { quizzesData } from "../data/quizzes-data.js";
+import { getLang, t, patternI18n } from "../data/i18n.js";
 import { renderSingleQuiz, renderQuizzesPage } from "./quiz-engine.js";
 import { labs } from "./labs.js";
-import { getStudiedPatterns, togglePatternStudied, updateSidebarProgress } from "./sidebar.js";
+import { getStudiedPatterns, togglePatternStudied } from "./sidebar.js";
+import { renderPatternVisualizer, stopActiveVisualizerTimer } from "./pattern-visualizer.js";
 import { icons } from "./icons.js";
 
-export function handleRoute(contentArea) {
-  const hash = window.location.hash || "#/";
+function getPatternLocalized(p) {
+  const lang = getLang();
+  const ov = patternI18n[p.id] && patternI18n[p.id][lang];
+  if (!ov || lang === "pt") {
+    return {
+      localName: p.ptName,
+      tagline: `${p.category.toUpperCase()} • ${p.scope.toUpperCase()}`,
+      intent: p.intent,
+      problem: p.problemAndMotivation,
+      solution: p.solution,
+      pros: p.consequences.pros,
+      cons: p.consequences.cons
+    };
+  }
+  return {
+    localName: ov.localName || p.name,
+    tagline: ov.tagline || `${p.category.toUpperCase()}`,
+    intent: ov.intent || p.intent,
+    problem: ov.problem || p.problemAndMotivation,
+    solution: ov.solution || p.solution,
+    pros: ov.pros || p.consequences.pros,
+    cons: ov.cons || p.consequences.cons
+  };
+}
 
-  // Scroll to top
+function getCatLabel(cat) {
+  if (cat === "criacional") return t("catCreational");
+  if (cat === "estrutural") return t("catStructural");
+  return t("catBehavioral");
+}
+
+export function updateHeaderTelemetry(hash) {
+  const badgeEl = document.getElementById("header-active-module");
+  if (!badgeEl) return;
+
+  if (hash.startsWith("#/padrao/")) {
+    const id = hash.replace("#/padrao/", "").trim();
+    const p = patternsData.find(item => item.id === id);
+    const anim = patternAnimations[id];
+    if (p) {
+      const code = anim ? anim.code : "DP";
+      badgeEl.innerHTML = `<span class="header-status-dot"></span> <span class="header-now-label">${t("nowLearning")}:</span> <strong>${code} · ${p.name.toUpperCase()}</strong>`;
+      return;
+    }
+  }
+  badgeEl.innerHTML = `<span class="header-status-dot"></span> <span class="header-now-label">${t("overviewLabel")}:</span> <strong>23 GOF PATTERNS</strong>`;
+}
+
+export function handleRoute(contentArea) {
+  stopActiveVisualizerTimer();
+  const hash = window.location.hash || "#/";
+  updateHeaderTelemetry(hash);
+
   window.scrollTo({ top: 0, behavior: "smooth" });
 
   if (hash === "#/" || hash === "#/livro") {
@@ -41,39 +88,97 @@ export function handleRoute(contentArea) {
   } else {
     contentArea.innerHTML = `
       <div class="callout callout-warning">
-        <h4>Página não encontrada</h4>
-        <p>A rota solicitada não existe. <a href="#/">Voltar para o início</a>.</p>
+        <h4>404</h4>
+        <p><a href="#/">${t("navHome")}</a></p>
       </div>
     `;
   }
 }
 
-// ----------------------------------------------------
-// 1. PÁGINA INICIAL (Visão Geral do Livro & Autores)
-// ----------------------------------------------------
 function renderHomePage(container) {
   const studied = getStudiedPatterns();
+  const lang = getLang();
 
   container.innerHTML = `
-    <div class="page-action-header">
-      <div class="breadcrumb text-muted" style="font-size: 0.85rem">
-        GoF Padrões de Projeto / <strong>Apresentação & Visão Geral</strong>
+    <!-- Protocol Explorer Style Hero Banner -->
+    <section class="pe-home-hero">
+      <div class="pe-hero-top-row">
+        <span class="pe-hero-kicker">${t("heroTag")}</span>
+        <div class="pe-hero-stats">
+          <span class="pe-stat-chip">${t("heroStatPatterns")}</span>
+          <span class="pe-stat-chip">${t("heroStatSteps")}</span>
+          <span class="pe-stat-chip">${t("heroStatLangs")}</span>
+        </div>
       </div>
-      <a href="#/principios" class="pager-btn next-btn">Próximo: 2 Princípios de POO →</a>
+
+      <h1 class="pe-hero-title">${t("heroHeadline")}</h1>
+      <p class="pe-hero-desc">${t("heroDescription")}</p>
+
+      <div class="pe-hero-actions">
+        <a href="#/padrao/abstract-factory" class="pe-cta-btn primary">${t("heroCtaPrimary")} →</a>
+        <a href="#/laboratorios" class="pe-cta-btn secondary">${t("heroCtaSecondary")}</a>
+        <a href="https://github.com/victor-reghini" target="_blank" rel="noopener noreferrer" class="pe-cta-btn ghost">
+          ${icons.github} <span>Victor Reghini</span> ${icons.externalLink}
+        </a>
+      </div>
+    </section>
+
+    <!-- Category Filter Bar -->
+    <div class="pe-catalog-toolbar" role="tablist" aria-label="Filter Design Patterns by Category">
+      <button type="button" class="pe-filter-tab active" data-cat-filter="all">${t("heroFilterAll")}</button>
+      <button type="button" class="pe-filter-tab" data-cat-filter="criacional">${t("heroFilterCreational")}</button>
+      <button type="button" class="pe-filter-tab" data-cat-filter="estrutural">${t("heroFilterStructural")}</button>
+      <button type="button" class="pe-filter-tab" data-cat-filter="comportamental">${t("heroFilterBehavioral")}</button>
     </div>
 
-    <div class="hero-section">
-      <span class="badge badge-scope">Livro Clássico da Engenharia de Software</span>
-      <h1 class="page-title mt-2">${bookOverview.title}</h1>
-      <p class="page-subtitle">${bookOverview.subtitle} • Erich Gamma, Richard Helm, Ralph Johnson, John Vlissides</p>
+    <!-- 23 Interactive Pattern Protocol Cards Grid -->
+    <div class="pe-pattern-cards-grid" id="pe-catalog-grid">
+      ${patternsData.map(p => {
+        const anim = patternAnimations[p.id];
+        const loc = getPatternLocalized(p);
+        const isDone = studied.includes(p.id);
+        const code = anim ? anim.code : "DP";
+        const stepsCount = anim ? anim.steps.length : 5;
+        const firstStepTag = anim ? (anim.steps[0].tag[lang] || anim.steps[0].tag.pt) : "STEP 1";
+        const lastStepTag = anim ? (anim.steps[stepsCount - 1].tag[lang] || anim.steps[stepsCount - 1].tag.pt) : "STEP 5";
+
+        return `
+          <a href="#/padrao/${p.id}" class="pe-pattern-card cat-${p.category}" data-card-cat="${p.category}">
+            <div class="pe-card-top">
+              <div class="pe-card-code-wrap">
+                <span class="pe-card-code cat-${p.category}">${code}</span>
+                <div>
+                  <h3 class="pe-card-title">${p.name}</h3>
+                  <span class="pe-card-sub">${loc.localName}</span>
+                </div>
+              </div>
+              <div class="pe-card-badges">
+                <span class="pe-mini-pill">${stepsCount} ${t("stepsCountSuffix")}</span>
+                ${isDone ? `<span class="pe-done-pill" title="${t("markedStudied")}">${icons.check}</span>` : ""}
+              </div>
+            </div>
+
+            <p class="pe-card-intent">${loc.intent}</p>
+
+            <div class="pe-card-pipeline-preview">
+              <span class="pe-pipe-step">01 ${firstStepTag}</span>
+              <span class="pe-pipe-arrow">→</span>
+              <span class="pe-pipe-dots">•••</span>
+              <span class="pe-pipe-arrow">→</span>
+              <span class="pe-pipe-step">0${stepsCount} ${lastStepTag}</span>
+            </div>
+
+            <div class="pe-card-footer">
+              <span class="pe-card-cat-tag cat-${p.category}">${getCatLabel(p.category)} • ${anim ? anim.scopeType : "OBJECT"}</span>
+              <span class="pe-card-inspect-link">${t("openVisualizer")} →</span>
+            </div>
+          </a>
+        `;
+      }).join("")}
     </div>
 
-    <div class="callout callout-info">
-      <h5>Sobre Esta Edição Digital Expandida</h5>
-      <p>Este portal tem como objetivo <strong>"resumir"</strong> a clássica obra do Gang of Four (GoF) — entre aspas porque o conteúdo foi <strong>expandido e atualizado</strong> com implementações modernas (TypeScript, Java 21, Python 3 e C++ original), exemplos de arquitetura real em frameworks consagrados (Spring, React, NestJS, Express), <strong>campos de prática interativos</strong> e <strong>quizzes de fixação</strong> com explicações ponto a ponto.</p>
-    </div>
-
-    <h2 class="section-title">Os Autores (A Famosa "Gang of Four" - GoF)</h2>
+    <!-- Gang of Four Foundations & Authors -->
+    <h2 class="section-title mt-5">Gang of Four (GoF) • ${bookOverview.originalTitle} (1994)</h2>
     <div class="grid-2">
       ${bookOverview.authors.map(a => `
         <div class="author-pill">
@@ -86,8 +191,6 @@ function renderHomePage(container) {
       `).join("")}
     </div>
 
-    <h2 class="section-title">Os 4 Elementos Essenciais de um Padrão</h2>
-    <p class="text-muted">Conforme definido por Christopher Alexander e adaptado pelo GoF (pág. 19), todo padrão de projeto é composto por quatro elementos indispensáveis:</p>
     <div class="grid-2 mt-3">
       ${bookOverview.patternElements.map(el => `
         <div class="info-card">
@@ -96,141 +199,85 @@ function renderHomePage(container) {
         </div>
       `).join("")}
     </div>
-
-    <h2 class="section-title">Os 23 Padrões Catalogados por Categoria</h2>
-    <div class="grid-3">
-      <div class="info-card" style="border-top: 4px solid var(--cat-creational)">
-        <span class="badge badge-creational">5 Padrões</span>
-        <h4 class="mt-2">Padrões de Criação</h4>
-        <p class="text-muted" style="font-size: 0.85rem">Abstraem o processo de instanciação, tornando o sistema independente de como seus objetos são criados e compostos.</p>
-        <ul style="padding-left: 1.2rem; margin-top: 0.75rem; font-size: 0.88rem">
-          <li><a href="#/padrao/abstract-factory">Abstract Factory</a></li>
-          <li><a href="#/padrao/builder">Builder</a></li>
-          <li><a href="#/padrao/factory-method">Factory Method</a></li>
-          <li><a href="#/padrao/prototype">Prototype</a></li>
-          <li><a href="#/padrao/singleton">Singleton</a></li>
-        </ul>
-      </div>
-
-      <div class="info-card" style="border-top: 4px solid var(--cat-structural)">
-        <span class="badge badge-structural">7 Padrões</span>
-        <h4 class="mt-2">Padrões Estruturais</h4>
-        <p class="text-muted" style="font-size: 0.85rem">Preocupam-se com a composição de classes ou objetos para formar estruturas maiores, flexíveis e eficientes.</p>
-        <ul style="padding-left: 1.2rem; margin-top: 0.75rem; font-size: 0.88rem">
-          <li><a href="#/padrao/adapter">Adapter</a></li>
-          <li><a href="#/padrao/bridge">Bridge</a></li>
-          <li><a href="#/padrao/composite">Composite</a></li>
-          <li><a href="#/padrao/decorator">Decorator</a></li>
-          <li><a href="#/padrao/facade">Facade</a></li>
-          <li><a href="#/padrao/flyweight">Flyweight</a></li>
-          <li><a href="#/padrao/proxy">Proxy</a></li>
-        </ul>
-      </div>
-
-      <div class="info-card" style="border-top: 4px solid var(--cat-behavioral)">
-        <span class="badge badge-behavioral">11 Padrões</span>
-        <h4 class="mt-2">Padrões Comportamentais</h4>
-        <p class="text-muted" style="font-size: 0.85rem">Focam nos algoritmos e na distribuição e desacoplamento de responsabilidades e comunicação entre objetos.</p>
-        <ul style="padding-left: 1.2rem; margin-top: 0.75rem; font-size: 0.88rem">
-          <li><a href="#/padrao/chain-of-responsibility">Chain of Responsibility</a></li>
-          <li><a href="#/padrao/command">Command</a></li>
-          <li><a href="#/padrao/interpreter">Interpreter</a></li>
-          <li><a href="#/padrao/iterator">Iterator</a></li>
-          <li><a href="#/padrao/mediator">Mediator</a></li>
-          <li><a href="#/padrao/memento">Memento</a></li>
-          <li><a href="#/padrao/observer">Observer</a></li>
-          <li><a href="#/padrao/state">State</a></li>
-          <li><a href="#/padrao/strategy">Strategy</a></li>
-          <li><a href="#/padrao/template-method">Template Method</a></li>
-          <li><a href="#/padrao/visitor">Visitor</a></li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="callout callout-success mt-4">
-      <h5>Dica de Aprendizado Rápido do GoF (pág. 10)</h5>
-      <p>Se você está começando a estudar agora, o próprio livro sugere iniciar pelos 8 padrões mais comuns e essenciais no mercado de trabalho:</p>
-      <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.5rem">
-        <a href="#/padrao/abstract-factory" class="btn btn-sm btn-outline">Abstract Factory</a>
-        <a href="#/padrao/adapter" class="btn btn-sm btn-outline">Adapter</a>
-        <a href="#/padrao/composite" class="btn btn-sm btn-outline">Composite</a>
-        <a href="#/padrao/decorator" class="btn btn-sm btn-outline">Decorator</a>
-        <a href="#/padrao/factory-method" class="btn btn-sm btn-outline">Factory Method</a>
-        <a href="#/padrao/observer" class="btn btn-sm btn-outline">Observer</a>
-        <a href="#/padrao/strategy" class="btn btn-sm btn-outline">Strategy</a>
-        <a href="#/padrao/template-method" class="btn btn-sm btn-outline">Template Method</a>
-      </div>
-    </div>
   `;
+
+  // Bind category filter buttons
+  const filterTabs = container.querySelectorAll(".pe-filter-tab");
+  const cards = container.querySelectorAll(".pe-pattern-card");
+  filterTabs.forEach(tab => {
+    tab.addEventListener("click", () => {
+      filterTabs.forEach(btn => btn.classList.remove("active"));
+      tab.classList.add("active");
+      const cat = tab.getAttribute("data-cat-filter");
+      cards.forEach(card => {
+        if (cat === "all" || card.getAttribute("data-card-cat") === cat) {
+          card.style.display = "flex";
+        } else {
+          card.style.display = "none";
+        }
+      });
+    });
+  });
 }
 
-// ----------------------------------------------------
-// 2. DOIS PRINCÍPIOS FUNDAMENTAIS DE POO
-// ----------------------------------------------------
 function renderPrinciplesPage(container) {
   container.innerHTML = `
     <div class="page-action-header">
-      <a href="#/" class="pager-btn">← Anterior: Apresentação</a>
-      <a href="#/remodelacao" class="pager-btn next-btn">Próximo: 8 Causas de Reformulação →</a>
+      <a href="#/" class="pager-btn">← ${t("prevLabel")}: ${t("navHome")}</a>
+      <a href="#/remodelacao" class="pager-btn next-btn">${t("nextLabel")}: ${t("navRedesign")} →</a>
     </div>
 
-    <h1 class="page-title">Dois Princípios Fundamentais de Projeto O.O.</h1>
-    <p class="page-subtitle">Os pilares universais estabelecidos pelo Gang of Four no Capítulo 1 para arquitetura de software reutilizável e manutenível.</p>
+    <h1 class="page-title">${t("navPrinciples")}</h1>
+    <p class="page-subtitle">Program to an interface, not an implementation • Favor object composition over class inheritance.</p>
 
     ${bookOverview.corePrinciples.map(p => `
-      <div class="info-card mt-4" style="border-left: 6px solid var(--accent-primary)">
+      <div class="info-card mt-4" style="border-left: 4px solid var(--accent-primary)">
         <h3>${p.title}</h3>
         <p class="text-muted" style="font-style: italic; margin-bottom: 0.8rem">"${p.original}"</p>
         <p>${p.summary}</p>
 
-        <h5 class="mt-3">Principais Benefícios:</h5>
-        <ul style="padding-left: 1.25rem; font-size: 0.9rem; margin-top: 0.4rem">
+        <ul style="padding-left: 1.25rem; font-size: 0.9rem; margin-top: 0.6rem">
           ${p.benefits.map(b => `<li>${b}</li>`).join("")}
         </ul>
 
         <div class="tradeoffs-container mt-3">
           <div class="tradeoff-card tradeoff-cons">
-            <h5>Código Rígido (Anti-padrão)</h5>
+            <h5>Anti-Pattern (Coupled)</h5>
             <code>${p.badPractice}</code>
           </div>
           <div class="tradeoff-card tradeoff-pros">
-            <h5>Código Flexível (GoF)</h5>
+            <h5>GoF Principle (Decoupled)</h5>
             <code>${p.goodPractice}</code>
           </div>
         </div>
       </div>
     `).join("")}
 
-    <h2 class="section-title">Herança de Classe vs Composição de Objetos</h2>
+    <h2 class="section-title">White-Box Inheritance vs. Black-Box Object Composition</h2>
     <div class="table-responsive">
       <table class="gof-table">
         <thead>
           <tr>
-            <th>Critério</th>
-            <th>Herança de Classe (Caixa Branca / White-Box)</th>
-            <th>Composição de Objetos (Caixa Preta / Black-Box)</th>
+            <th>Dimension</th>
+            <th>Class Inheritance (White-Box Reuse)</th>
+            <th>Object Composition (Black-Box Reuse)</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td><strong>Vinculação</strong></td>
-            <td>Estática (definida em tempo de compilação)</td>
-            <td>Dinâmica (definida em tempo de execução via referências)</td>
+            <td><strong>Binding Time</strong></td>
+            <td>Static (fixed at compile time)</td>
+            <td>Dynamic (hot-swappable at runtime via pointers)</td>
           </tr>
           <tr>
-            <td><strong>Encapsulamento</strong></td>
-            <td>Fraco (frequentemente viola o encapsulamento da classe ancestral)</td>
-            <td>Forte (respeita contratos e esconde detalhes internos)</td>
+            <td><strong>Encapsulation</strong></td>
+            <td>Weak (exposes parent internals to subclasses)</td>
+            <td>Strict (interacts solely through interface contracts)</td>
           </tr>
           <tr>
-            <td><strong>Flexibilidade</strong></td>
-            <td>Baixa: mudar a superclasse propaga mudanças e quebra subclasses</td>
-            <td>Alta: o objeto delegado pode ser substituído a qualquer instante</td>
-          </tr>
-          <tr>
-            <td><strong>Número de Classes</strong></td>
-            <td>Causa explosão combinatória de subclasses</td>
-            <td>Mantém a hierarquia de classes enxuta e coesa</td>
+            <td><strong>Class Hierarchy</strong></td>
+            <td>Combinatorial subclass explosion (N x M)</td>
+            <td>Compact, orthogonal hierarchies (N + M)</td>
           </tr>
         </tbody>
       </table>
@@ -238,35 +285,27 @@ function renderPrinciplesPage(container) {
   `;
 }
 
-// ----------------------------------------------------
-// 3. AS 8 CAUSAS DE REFORMULAÇÃO DE PROJETO
-// ----------------------------------------------------
 function renderRedesignCausesPage(container) {
   container.innerHTML = `
     <div class="page-action-header">
-      <a href="#/principios" class="pager-btn">← Anterior: Princípios</a>
-      <a href="#/lexi" class="pager-btn next-btn">Próximo: O Caso Lexi →</a>
+      <a href="#/principios" class="pager-btn">← ${t("prevLabel")}: ${t("navPrinciples")}</a>
+      <a href="#/lexi" class="pager-btn next-btn">${t("nextLabel")}: ${t("navLexi")} →</a>
     </div>
 
-    <h1 class="page-title">As 8 Causas de Reformulação de Software</h1>
-    <p class="page-subtitle">Como antecipar requisitos mutáveis e aplicar os padrões certos para evitar reescritas caras (GoF pág. 39-40).</p>
-
-    <div class="callout callout-info">
-      <p>"Projetar para mudanças: A chave para maximização da reutilização está na antecipação de novos requisitos e em projetar sistemas de modo que eles possam evoluir de acordo." — GoF</p>
-    </div>
+    <h1 class="page-title">${t("navRedesign")}</h1>
+    <p class="page-subtitle">GoF Chapter 1 (pp. 39-40): 8 architectural smells that force costly system rewrites and the exact patterns that eliminate them.</p>
 
     <div class="grid-2 mt-4">
       ${bookOverview.causesOfRedesign.map(c => `
         <div class="info-card">
-          <span class="badge badge-scope">Causa #${c.number}</span>
+          <span class="badge badge-scope">#0${c.number}</span>
           <h4 class="mt-2" style="font-size: 1.05rem">${c.cause}</h4>
           <p class="text-muted" style="font-size: 0.88rem; margin: 0.5rem 0">${c.description}</p>
           <div style="margin-top: 0.8rem">
-            <strong style="font-size: 0.78rem; text-transform: uppercase; color: var(--text-muted)">Padrões que Solucionam:</strong>
             <div style="display: flex; gap: 0.35rem; flex-wrap: wrap; margin-top: 0.3rem">
               ${c.patterns.map(pName => {
-                const pat = patternsData.find(p => p.name === pName || p.ptName === pName);
-                const link = pat ? `#/padrao/${pat.id}` : '#';
+                const pat = patternsData.find(p => p.name === pName || p.ptName === pName || (pName === "Façade" && p.id === "facade"));
+                const link = pat ? `#/padrao/${pat.id}` : "#/padrao/facade";
                 return `<a href="${link}" class="btn btn-sm btn-outline">${pName}</a>`;
               }).join("")}
             </div>
@@ -277,37 +316,32 @@ function renderRedesignCausesPage(container) {
   `;
 }
 
-// ----------------------------------------------------
-// 4. O CASO LEXI (ESTUDO DE CASO COMPLETO DO GOF)
-// ----------------------------------------------------
 function renderLexiPage(container) {
   const lexi = bookOverview.lexiCaseStudy;
 
   container.innerHTML = `
     <div class="page-action-header">
-      <a href="#/remodelacao" class="pager-btn">← Anterior: Causas de Reformulação</a>
-      <a href="#/matriz" class="pager-btn next-btn">Próximo: Matriz GoF →</a>
+      <a href="#/remodelacao" class="pager-btn">← ${t("prevLabel")}: ${t("navRedesign")}</a>
+      <a href="#/matriz" class="pager-btn next-btn">${t("nextLabel")}: ${t("navMatrix")} →</a>
     </div>
 
     <h1 class="page-title">${lexi.title}</h1>
     <p class="page-subtitle">${lexi.subtitle}</p>
 
     <div class="callout callout-info">
-      <h5>Sobre o Editor Lexi (Capítulo 2 do Livro)</h5>
       <p>${lexi.description}</p>
     </div>
 
-    <h2 class="section-title">Os 8 Desafios Arquiteturais do Lexi e suas Soluções</h2>
     <div class="lexi-challenges-list">
       ${lexi.challenges.map(c => `
         <div class="info-card mt-3">
           <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem">
             <h4 style="margin: 0">${c.problem}</h4>
-            <span class="badge badge-scope">GoF pág. ${c.gofPage}</span>
+            <span class="badge badge-scope">${t("gofPagePrefix")} ${c.gofPage}</span>
           </div>
-          <p class="mt-2 text-muted" style="font-size: 0.92rem"><strong>O Desafio:</strong> ${c.description}</p>
+          <p class="mt-2 text-muted" style="font-size: 0.92rem">${c.description}</p>
           <div class="callout callout-success mt-2" style="margin-bottom: 0.5rem">
-            <strong>Padrão Aplicado: <a href="#/padrao/${patternsData.find(p => p.name === c.patternUsed)?.id || ''}">${c.patternUsed}</a></strong>
+            <strong>Pattern: <a href="#/padrao/${patternsData.find(p => p.name === c.patternUsed)?.id || "composite"}">${c.patternUsed}</a></strong>
             <p style="margin-top: 0.3rem">${c.solution}</p>
           </div>
         </div>
@@ -316,14 +350,11 @@ function renderLexiPage(container) {
   `;
 }
 
-// ----------------------------------------------------
-// 5. MATRIZ GOF (TABELA 1.1)
-// ----------------------------------------------------
 function renderMatrixPage(container) {
   container.innerHTML = `
     <div class="page-action-header">
-      <a href="#/lexi" class="pager-btn">← Anterior: O Caso Lexi</a>
-      <a href="#/relacionamentos" class="pager-btn next-btn">Próximo: Grafo de Relações →</a>
+      <a href="#/lexi" class="pager-btn">← ${t("prevLabel")}: ${t("navLexi")}</a>
+      <a href="#/relacionamentos" class="pager-btn next-btn">${t("nextLabel")}: ${t("navRelationships")} →</a>
     </div>
 
     <h1 class="page-title">${bookOverview.catalogMatrix.title}</h1>
@@ -333,59 +364,59 @@ function renderMatrixPage(container) {
       <table class="gof-table">
         <thead>
           <tr>
-            <th style="width: 22%">Escopo \\ Propósito</th>
-            <th style="width: 26%">De Criação</th>
-            <th style="width: 26%">Estrutural</th>
-            <th style="width: 26%">Comportamental</th>
+            <th style="width: 22%">${t("scopeLabel")} \\ ${t("gofLayerLabel")}</th>
+            <th style="width: 26%">1. ${t("catCreational")} (5)</th>
+            <th style="width: 26%">2. ${t("catStructural")} (7)</th>
+            <th style="width: 26%">3. ${t("catBehavioral")} (11)</th>
           </tr>
         </thead>
         <tbody>
           <tr>
             <td>
-              <strong>Classe</strong><br />
-              <small class="text-muted">Herança estática / tempo de compilação</small>
+              <strong>${t("scopeClass")}</strong><br />
+              <small class="text-muted">Compile-time inheritance</small>
             </td>
             <td>
-              <a href="#/padrao/factory-method" class="pattern-tag-link badge-creational">Factory Method</a>
+              <a href="#/padrao/factory-method" class="pattern-tag-link badge-creational">FM · Factory Method</a>
             </td>
             <td>
-              <a href="#/padrao/adapter" class="pattern-tag-link badge-structural">Adapter (de classe)</a>
+              <a href="#/padrao/adapter" class="pattern-tag-link badge-structural">AD · Adapter (Class)</a>
             </td>
             <td>
-              <a href="#/padrao/interpreter" class="pattern-tag-link badge-behavioral">Interpreter</a><br />
-              <a href="#/padrao/template-method" class="pattern-tag-link badge-behavioral">Template Method</a>
+              <a href="#/padrao/interpreter" class="pattern-tag-link badge-behavioral">IN · Interpreter</a><br />
+              <a href="#/padrao/template-method" class="pattern-tag-link badge-behavioral">TM · Template Method</a>
             </td>
           </tr>
           <tr>
             <td>
-              <strong>Objeto</strong><br />
-              <small class="text-muted">Composição dinâmica / tempo de execução</small>
+              <strong>${t("scopeObject")}</strong><br />
+              <small class="text-muted">Runtime object composition</small>
             </td>
             <td>
-              <a href="#/padrao/abstract-factory" class="pattern-tag-link badge-creational">Abstract Factory</a><br />
-              <a href="#/padrao/builder" class="pattern-tag-link badge-creational">Builder</a><br />
-              <a href="#/padrao/prototype" class="pattern-tag-link badge-creational">Prototype</a><br />
-              <a href="#/padrao/singleton" class="pattern-tag-link badge-creational">Singleton</a>
+              <a href="#/padrao/abstract-factory" class="pattern-tag-link badge-creational">AF · Abstract Factory</a><br />
+              <a href="#/padrao/builder" class="pattern-tag-link badge-creational">BL · Builder</a><br />
+              <a href="#/padrao/prototype" class="pattern-tag-link badge-creational">PR · Prototype</a><br />
+              <a href="#/padrao/singleton" class="pattern-tag-link badge-creational">SG · Singleton</a>
             </td>
             <td>
-              <a href="#/padrao/adapter" class="pattern-tag-link badge-structural">Adapter (de objeto)</a><br />
-              <a href="#/padrao/bridge" class="pattern-tag-link badge-structural">Bridge</a><br />
-              <a href="#/padrao/composite" class="pattern-tag-link badge-structural">Composite</a><br />
-              <a href="#/padrao/decorator" class="pattern-tag-link badge-structural">Decorator</a><br />
-              <a href="#/padrao/facade" class="pattern-tag-link badge-structural">Façade</a><br />
-              <a href="#/padrao/flyweight" class="pattern-tag-link badge-structural">Flyweight</a><br />
-              <a href="#/padrao/proxy" class="pattern-tag-link badge-structural">Proxy</a>
+              <a href="#/padrao/adapter" class="pattern-tag-link badge-structural">AD · Adapter (Object)</a><br />
+              <a href="#/padrao/bridge" class="pattern-tag-link badge-structural">BR · Bridge</a><br />
+              <a href="#/padrao/composite" class="pattern-tag-link badge-structural">CP · Composite</a><br />
+              <a href="#/padrao/decorator" class="pattern-tag-link badge-structural">DC · Decorator</a><br />
+              <a href="#/padrao/facade" class="pattern-tag-link badge-structural">FC · Facade</a><br />
+              <a href="#/padrao/flyweight" class="pattern-tag-link badge-structural">FW · Flyweight</a><br />
+              <a href="#/padrao/proxy" class="pattern-tag-link badge-structural">PX · Proxy</a>
             </td>
             <td>
-              <a href="#/padrao/chain-of-responsibility" class="pattern-tag-link badge-behavioral">Chain of Responsibility</a><br />
-              <a href="#/padrao/command" class="pattern-tag-link badge-behavioral">Command</a><br />
-              <a href="#/padrao/iterator" class="pattern-tag-link badge-behavioral">Iterator</a><br />
-              <a href="#/padrao/mediator" class="pattern-tag-link badge-behavioral">Mediator</a><br />
-              <a href="#/padrao/memento" class="pattern-tag-link badge-behavioral">Memento</a><br />
-              <a href="#/padrao/observer" class="pattern-tag-link badge-behavioral">Observer</a><br />
-              <a href="#/padrao/state" class="pattern-tag-link badge-behavioral">State</a><br />
-              <a href="#/padrao/strategy" class="pattern-tag-link badge-behavioral">Strategy</a><br />
-              <a href="#/padrao/visitor" class="pattern-tag-link badge-behavioral">Visitor</a>
+              <a href="#/padrao/chain-of-responsibility" class="pattern-tag-link badge-behavioral">CR · Chain of Responsibility</a><br />
+              <a href="#/padrao/command" class="pattern-tag-link badge-behavioral">CM · Command</a><br />
+              <a href="#/padrao/iterator" class="pattern-tag-link badge-behavioral">IT · Iterator</a><br />
+              <a href="#/padrao/mediator" class="pattern-tag-link badge-behavioral">MD · Mediator</a><br />
+              <a href="#/padrao/memento" class="pattern-tag-link badge-behavioral">MM · Memento</a><br />
+              <a href="#/padrao/observer" class="pattern-tag-link badge-behavioral">OB · Observer</a><br />
+              <a href="#/padrao/state" class="pattern-tag-link badge-behavioral">ST · State</a><br />
+              <a href="#/padrao/strategy" class="pattern-tag-link badge-behavioral">SR · Strategy</a><br />
+              <a href="#/padrao/visitor" class="pattern-tag-link badge-behavioral">VS · Visitor</a>
             </td>
           </tr>
         </tbody>
@@ -394,248 +425,273 @@ function renderMatrixPage(container) {
   `;
 }
 
-// ----------------------------------------------------
-// 6. GRAFO DE RELACIONAMENTOS INTERATIVO
-// ----------------------------------------------------
 function renderRelationshipsPage(container) {
   container.innerHTML = `
     <div class="page-action-header">
-      <a href="#/matriz" class="pager-btn">← Anterior: Matriz GoF</a>
-      <a href="#/padrao/abstract-factory" class="pager-btn next-btn">Iniciar Catálogo: Abstract Factory →</a>
+      <a href="#/matriz" class="pager-btn">← ${t("prevLabel")}: ${t("navMatrix")}</a>
+      <a href="#/padrao/abstract-factory" class="pager-btn next-btn">${t("nextLabel")}: Abstract Factory →</a>
     </div>
 
-    <h1 class="page-title">Mapa de Relacionamentos entre os Padrões</h1>
-    <p class="page-subtitle">A famosa Figura 1.1 do livro GoF (pág. 27 e 360) mostrando como os padrões se entrelaçam em sinergia.</p>
-
-    <div class="callout callout-info">
-      <p>"Sistemas orientados a objeto bem-projetados têm múltiplos padrões embutidos. A composição em termos de padrões permite-nos atingir essa sinergia com maior facilidade." — GoF</p>
-    </div>
+    <h1 class="page-title">${t("navRelationships")}</h1>
+    <p class="page-subtitle">GoF Figure 1.1 (pp. 27 & 360): How the 23 patterns collaborate in real-world architectures.</p>
 
     <div class="info-card mt-3">
-      <h4>Conexões Chave do Catálogo:</h4>
-      <ul style="padding-left: 1.25rem; font-size: 0.92rem; margin-top: 0.5rem; display: flex; flex-direction: column; gap: 0.5rem">
-        <li><strong>Composite + Iterator + Visitor:</strong> O Composite monta a estrutura em árvore; o Iterator percorre os elementos sem expor os ponteiros; o Visitor aplica operações analíticas sobre cada nó usando Despacho Duplo.</li>
-        <li><strong>Command + Memento + Prototype:</strong> O Command encapsula a solicitação; o Memento salva o snapshot do estado para Undo; o Prototype clona o comando antes de entrar na lista de histórico.</li>
-        <li><strong>Decorator vs Adapter vs Proxy:</strong> Todos são 'Wrappers' que envolvem um objeto interno. O <em>Decorator</em> adiciona responsabilidades mantendo a mesma interface; o <em>Adapter</em> altera a interface para compatibilidade; o <em>Proxy</em> mantém a mesma interface mas controla o acesso (segurança, cache, lazy loading).</li>
-        <li><strong>Strategy vs State:</strong> Ambos usam delegação e possuem diagramas quase idênticos. O <em>Strategy</em> é escolhido pelo cliente externamente para variar o algoritmo; o <em>State</em> muda seu estado internamente conforme transições de ciclo de vida.</li>
-        <li><strong>Observer vs Mediator:</strong> Ambos desacoplam colegas. O <em>Observer</em> distribui a comunicação de eventos (1:N); o <em>Mediator</em> centraliza o controle e a coordenação multilateral.</li>
+      <ul style="padding-left: 1.25rem; font-size: 0.92rem; display: flex; flex-direction: column; gap: 0.75rem">
+        <li><strong><a href="#/padrao/composite">Composite</a> + <a href="#/padrao/iterator">Iterator</a> + <a href="#/padrao/visitor">Visitor</a>:</strong> Composite builds recursive trees; Iterator traverses them without leaking internal pointers; Visitor applies external operations via Double Dispatch.</li>
+        <li><strong><a href="#/padrao/command">Command</a> + <a href="#/padrao/memento">Memento</a> + <a href="#/padrao/prototype">Prototype</a>:</strong> Command encapsulates actions; Memento stores private state snapshots for rollback; Prototype clones commands into the history stack.</li>
+        <li><strong><a href="#/padrao/decorator">Decorator</a> vs <a href="#/padrao/adapter">Adapter</a> vs <a href="#/padrao/proxy">Proxy</a>:</strong> Decorator stacks responsibilities keeping the same interface; Adapter converts an incompatible interface; Proxy keeps the exact interface to control access, caching, or lazy loading.</li>
+        <li><strong><a href="#/padrao/strategy">Strategy</a> vs <a href="#/padrao/state">State</a>:</strong> Strategy swaps interchangeable algorithms chosen by the client; State transitions behavior autonomously as internal lifecycle state changes.</li>
+        <li><strong><a href="#/padrao/observer">Observer</a> vs <a href="#/padrao/mediator">Mediator</a>:</strong> Observer broadcasts one-to-many state updates; Mediator centralizes many-to-many coordination into a star hub.</li>
       </ul>
     </div>
   `;
 }
 
-// ----------------------------------------------------
-// 7. PÁGINA INDIVIDUAL DO PADRÃO (TODOS OS 23)
-// ----------------------------------------------------
 function renderPatternPage(container, patternId) {
   const patternIndex = patternsData.findIndex(p => p.id === patternId);
   if (patternIndex === -1) {
-    container.innerHTML = `<div class="callout callout-danger"><h4>Padrão não encontrado</h4></div>`;
+    container.innerHTML = `<div class="callout callout-danger"><h4>Pattern not found</h4></div>`;
     return;
   }
 
   const p = patternsData[patternIndex];
+  const loc = getPatternLocalized(p);
+  const anim = patternAnimations[p.id];
   const prevPattern = patternIndex > 0 ? patternsData[patternIndex - 1] : null;
   const nextPattern = patternIndex < patternsData.length - 1 ? patternsData[patternIndex + 1] : null;
 
   const studied = getStudiedPatterns();
   const isStudied = studied.includes(p.id);
 
-  const categoryBadgeClass = p.category === 'criacional'
-    ? 'badge-creational'
-    : p.category === 'estrutural'
-    ? 'badge-structural'
-    : 'badge-behavioral';
+  const categoryBadgeClass = p.category === "criacional"
+    ? "badge-creational"
+    : p.category === "estrutural"
+    ? "badge-structural"
+    : "badge-behavioral";
 
   container.innerHTML = `
-    <!-- Top Action Bar (Previous / Next / Bookmark) -->
+    <!-- Top Navigation & Completion Bar -->
     <div class="page-action-header">
       <div class="pager-buttons">
         ${prevPattern ? `
-          <a href="#/padrao/${prevPattern.id}" class="pager-btn">← Anterior: ${prevPattern.name}</a>
+          <a href="#/padrao/${prevPattern.id}" class="pager-btn">← ${t("prevLabel")}: ${prevPattern.name}</a>
         ` : `
-          <a href="#/" class="pager-btn">← Início</a>
+          <a href="#/" class="pager-btn">← ${t("navHome")}</a>
         `}
       </div>
 
-      <button class="bookmark-action-btn ${isStudied ? 'marked' : ''}" id="btn-toggle-bookmark">
-        ${isStudied ? `${icons.bookmarkCheck} <span>Marcado como Estudado</span>` : `${icons.bookmark} <span>Marcar como Estudado</span>`}
+      <button type="button" class="bookmark-action-btn ${isStudied ? "marked" : ""}" id="btn-toggle-bookmark">
+        ${isStudied ? `${icons.bookmarkCheck} <span>${t("markedStudied")}</span>` : `${icons.bookmark} <span>${t("markStudied")}</span>`}
       </button>
 
       <div class="pager-buttons">
         ${nextPattern ? `
-          <a href="#/padrao/${nextPattern.id}" class="pager-btn next-btn">Próximo: ${nextPattern.name} →</a>
+          <a href="#/padrao/${nextPattern.id}" class="pager-btn next-btn">${t("nextLabel")}: ${nextPattern.name} →</a>
         ` : `
-          <a href="#/quizzes" class="pager-btn next-btn">Ir para Quizzes →</a>
+          <a href="#/quizzes" class="pager-btn next-btn">${t("navQuizzes")} →</a>
         `}
       </div>
     </div>
 
-    <!-- Cabeçalho do Padrão -->
+    <!-- Pattern Header Summary -->
     <div class="pattern-header-card">
-      <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.75rem">
-        <span class="badge ${categoryBadgeClass}">${p.category}</span>
-        <span class="badge badge-scope">Escopo de ${p.scope}</span>
-        ${p.aliases && p.aliases.length > 0 ? `<span class="badge badge-scope">Também conhecido como: ${p.aliases.join(", ")}</span>` : ''}
+      <div class="pattern-meta-badges">
+        <span class="badge ${categoryBadgeClass}">${anim ? anim.code : "DP"} • ${getCatLabel(p.category)}</span>
+        <span class="badge badge-scope">${t("scopeLabel")}: ${anim ? anim.scopeType : p.scope.toUpperCase()}</span>
+        <span class="badge badge-scope">${t("gofPagePrefix")} ${p.gofPage}</span>
+        ${p.aliases && p.aliases.length > 0 ? `<span class="badge badge-scope">${t("alsoKnownAs")}: ${p.aliases.join(", ")}</span>` : ""}
       </div>
 
-      <h1 class="page-title">${p.name} <small style="font-size: 1.2rem; color: var(--text-muted); font-weight: 400">(${p.ptName})</small></h1>
-      <p class="page-subtitle" style="margin-bottom: 1.25rem"><em>${p.originalName} Design Pattern</em></p>
+      <h1 class="page-title">${p.name} <small class="pattern-local-subtitle">(${loc.localName})</small></h1>
 
-      <div class="callout callout-info" style="margin-top: 0">
-        <h5>Intenção e Objetivo (GoF)</h5>
-        <p style="font-size: 1.05rem; font-weight: 500">${p.intent}</p>
+      <div class="callout callout-info" style="margin-top: 0.75rem; margin-bottom: 0">
+        <h5>${t("intentTitle")}</h5>
+        <p style="font-size: 1.02rem; font-weight: 500">${loc.intent}</p>
       </div>
     </div>
 
-    <!-- Problema & Motivação -->
-    <h2 class="section-title">Problema & Motivação no Mundo Real</h2>
-    <div class="info-card">
-      <p style="white-space: pre-line; line-height: 1.65">${p.problemAndMotivation}</p>
+    <!-- Quick Jump Workspace Tabs -->
+    <nav class="pe-section-jump-nav" aria-label="Pattern Sections">
+      <a href="#sec-visualizer" class="pe-jump-link active" data-jump="sec-visualizer">${t("tabVisualizer")}</a>
+      <a href="#sec-architecture" class="pe-jump-link" data-jump="sec-architecture">${t("tabArchitecture")}</a>
+      <a href="#sec-code" class="pe-jump-link" data-jump="sec-code">${t("tabCode")}</a>
+      <a href="#sec-quiz" class="pe-jump-link" data-jump="sec-quiz">${t("tabLabQuiz")}</a>
+    </nav>
+
+    <!-- 1. Interactive Step-by-Step Visualizer & Memory Inspector (Protocol Explorer Core) -->
+    <div id="sec-visualizer">
+      <div id="pattern-visualizer-mount"></div>
     </div>
 
-    <!-- Solução Arquitetural -->
-    <h2 class="section-title">Solução Arquitetural</h2>
-    <div class="info-card" style="border-left: 4px solid var(--accent-primary)">
-      <p style="white-space: pre-line; line-height: 1.65">${p.solution}</p>
-    </div>
+    <!-- 2. Problem, Solution & Structure -->
+    <div id="sec-architecture">
+      <h2 class="section-title">${t("problemTitle")}</h2>
+      <div class="info-card">
+        <p style="white-space: pre-line; line-height: 1.65">${loc.problem}</p>
+      </div>
 
-    <!-- Estrutura & Participantes -->
-    <h2 class="section-title">Estrutura & Participantes</h2>
-    <div class="info-card">
-      <h5>Participantes do Padrão:</h5>
-      <ul style="padding-left: 1.25rem; font-size: 0.92rem; margin: 0.75rem 0; display: flex; flex-direction: column; gap: 0.5rem">
-        ${p.structure.participants.map(part => `
-          <li><strong>${part.name}:</strong> ${part.role}</li>
-        `).join("")}
-      </ul>
-      <p class="text-muted" style="font-size: 0.88rem; margin-top: 0.75rem"><strong>Colaborações:</strong> ${p.structure.collaborations}</p>
-    </div>
+      <h2 class="section-title">${t("solutionTitle")}</h2>
+      <div class="info-card" style="border-left: 4px solid var(--accent-primary)">
+        <p style="white-space: pre-line; line-height: 1.65">${loc.solution}</p>
+      </div>
 
-    <!-- Aplicabilidade -->
-    <h2 class="section-title">Aplicabilidade (Quando Usar e Quando Evitar)</h2>
-    <div class="info-card">
-      <ul style="padding-left: 1.25rem; font-size: 0.92rem; display: flex; flex-direction: column; gap: 0.5rem">
-        ${p.applicability.map(app => `<li>${app}</li>`).join("")}
-      </ul>
-    </div>
+      <h2 class="section-title">${t("structureTitle")}</h2>
+      <div class="info-card">
+        <h5>${t("participantsSubtitle")}</h5>
+        <ul style="padding-left: 1.25rem; font-size: 0.92rem; margin: 0.75rem 0; display: flex; flex-direction: column; gap: 0.5rem">
+          ${p.structure.participants.map(part => `
+            <li><strong>${part.name}:</strong> ${part.role}</li>
+          `).join("")}
+        </ul>
+        <p class="text-muted" style="font-size: 0.88rem; margin-top: 0.75rem"><strong>${t("collaborationsLabel")}</strong> ${p.structure.collaborations}</p>
+      </div>
 
-    <!-- Consequências & Trade-offs -->
-    <h2 class="section-title">Consequências & Trade-offs</h2>
-    <div class="tradeoffs-container">
-      <div class="tradeoff-card tradeoff-pros">
-        <h5>Vantagens & Benefícios</h5>
-        <ul>
-          ${p.consequences.pros.map(pro => `<li>${pro}</li>`).join("")}
+      <h2 class="section-title">${t("applicabilityTitle")}</h2>
+      <div class="info-card">
+        <ul style="padding-left: 1.25rem; font-size: 0.92rem; display: flex; flex-direction: column; gap: 0.5rem">
+          ${p.applicability.map(app => `<li>${app}</li>`).join("")}
         </ul>
       </div>
-      <div class="tradeoff-card tradeoff-cons">
-        <h5>Desvantagens & Custos</h5>
-        <ul>
-          ${p.consequences.cons.map(con => `<li>${con}</li>`).join("")}
-        </ul>
-      </div>
-    </div>
 
-    <!-- Notas de Implementação -->
-    <h2 class="section-title">Notas de Implementação & Dicas dos Autores</h2>
-    <div class="info-card">
-      <ul style="padding-left: 1.25rem; font-size: 0.92rem; display: flex; flex-direction: column; gap: 0.5rem">
-        ${p.implementationNotes.map(note => `<li>${note}</li>`).join("")}
-      </ul>
-    </div>
-
-    <!-- Exemplos de Código Multi-Linguagem -->
-    <h2 class="section-title">Exemplos de Código Prático</h2>
-    <div class="code-block-wrapper" id="pattern-code-box">
-      <div class="code-header">
-        <div class="code-tabs">
-          <button class="code-tab-btn active" data-lang="typescript">TypeScript</button>
-          <button class="code-tab-btn" data-lang="java">Java</button>
-          <button class="code-tab-btn" data-lang="python">Python</button>
-          <button class="code-tab-btn" data-lang="gofOriginal">C++ (GoF Original)</button>
+      <h2 class="section-title">${t("consequencesTitle")}</h2>
+      <div class="tradeoffs-container">
+        <div class="tradeoff-card tradeoff-pros">
+          <h5>${t("prosTitle")}</h5>
+          <ul>
+            ${loc.pros.map(pro => `<li>${pro}</li>`).join("")}
+          </ul>
         </div>
-        <button class="copy-btn" id="btn-copy-code">${icons.copy} <span>Copiar Código</span></button>
+        <div class="tradeoff-card tradeoff-cons">
+          <h5>${t("consTitle")}</h5>
+          <ul>
+            ${loc.cons.map(con => `<li>${con}</li>`).join("")}
+          </ul>
+        </div>
       </div>
-      <pre class="code-content"><code id="code-snippet-el"></code></pre>
+
+      <h2 class="section-title">${t("implementationTitle")}</h2>
+      <div class="info-card">
+        <ul style="padding-left: 1.25rem; font-size: 0.92rem; display: flex; flex-direction: column; gap: 0.5rem">
+          ${p.implementationNotes.map(note => `<li>${note}</li>`).join("")}
+        </ul>
+      </div>
     </div>
 
-    <!-- Usos no Mundo Real -->
-    <h2 class="section-title">Usos Conhecidos & Frameworks Modernos</h2>
-    <div class="info-card">
-      <ul style="padding-left: 1.25rem; font-size: 0.92rem; display: flex; flex-direction: column; gap: 0.5rem">
-        ${p.realWorldUses.map(use => `<li>${use}</li>`).join("")}
-      </ul>
+    <!-- 3. Multi-Language Code Examples -->
+    <div id="sec-code">
+      <h2 class="section-title">${t("codeExamplesTitle")}</h2>
+      <div class="code-block-wrapper" id="pattern-code-box">
+        <div class="code-header">
+          <div class="code-tabs" role="tablist" aria-label="Code language selector">
+            <button type="button" class="code-tab-btn active" data-lang="typescript">TypeScript</button>
+            <button type="button" class="code-tab-btn" data-lang="java">Java 21</button>
+            <button type="button" class="code-tab-btn" data-lang="python">Python 3</button>
+            <button type="button" class="code-tab-btn" data-lang="gofOriginal">C++ (GoF 1994)</button>
+          </div>
+          <button type="button" class="copy-btn" id="btn-copy-code">${icons.copy} <span>${t("copyCode")}</span></button>
+        </div>
+        <pre class="code-content"><code id="code-snippet-el"></code></pre>
+      </div>
+
+      <h2 class="section-title">${t("realWorldTitle")}</h2>
+      <div class="info-card">
+        <ul style="padding-left: 1.25rem; font-size: 0.92rem; display: flex; flex-direction: column; gap: 0.5rem">
+          ${p.realWorldUses.map(use => `<li>${use}</li>`).join("")}
+        </ul>
+      </div>
+
+      <h2 class="section-title">${t("relatedPatternsTitle")}</h2>
+      <div class="info-card">
+        <ul style="padding-left: 1.25rem; font-size: 0.92rem; display: flex; flex-direction: column; gap: 0.5rem">
+          ${p.relatedPatterns.map(rel => `<li>${rel}</li>`).join("")}
+        </ul>
+      </div>
     </div>
 
-    <!-- Padrões Relacionados -->
-    <h2 class="section-title">Padrões Relacionados & Diferenças</h2>
-    <div class="info-card">
-      <ul style="padding-left: 1.25rem; font-size: 0.92rem; display: flex; flex-direction: column; gap: 0.5rem">
-        ${p.relatedPatterns.map(rel => `<li>${rel}</li>`).join("")}
-      </ul>
+    <!-- 4. Interactive Playground & Quiz -->
+    <div id="sec-quiz">
+      ${p.hasPlayground && labs[p.playgroundId] ? `
+        <h2 class="section-title">${t("livePlaygroundTitle")}</h2>
+        <div id="inline-lab-container"></div>
+      ` : ""}
+
+      <h2 class="section-title">${t("quizSectionTitle")}</h2>
+      <div id="inline-quiz-container"></div>
+
+      <h2 class="section-title">${t("referencesTitle")}</h2>
+      <div class="info-card">
+        <ul style="padding-left: 1.25rem; font-size: 0.88rem; color: var(--text-secondary)">
+          ${p.references.map(ref => `<li>${ref}</li>`).join("")}
+        </ul>
+      </div>
     </div>
 
-    <!-- Campo de Prática Interativo (Se houver) -->
-    ${p.hasPlayground && labs[p.playgroundId] ? `
-      <h2 class="section-title">Campo de Prática Interativo (Live Playground)</h2>
-      <div id="inline-lab-container"></div>
-    ` : ''}
-
-    <!-- Quiz de Fixação -->
-    <h2 class="section-title">Teste Seus Conhecimentos</h2>
-    <div id="inline-quiz-container"></div>
-
-    <!-- Referências Bibliográficas -->
-    <h2 class="section-title">Referências Bibliográficas</h2>
-    <div class="info-card">
-      <ul style="padding-left: 1.25rem; font-size: 0.88rem; color: var(--text-secondary)">
-        ${p.references.map(ref => `<li>${ref}</li>`).join("")}
-      </ul>
-    </div>
-
-    <!-- Bottom Action Bar -->
+    <!-- Bottom Navigation -->
     <div class="page-action-header mt-5">
       <div class="pager-buttons">
         ${prevPattern ? `
-          <a href="#/padrao/${prevPattern.id}" class="pager-btn">← Anterior: ${prevPattern.name}</a>
+          <a href="#/padrao/${prevPattern.id}" class="pager-btn">← ${t("prevLabel")}: ${prevPattern.name}</a>
         ` : `
-          <a href="#/" class="pager-btn">← Início</a>
+          <a href="#/" class="pager-btn">← ${t("navHome")}</a>
         `}
       </div>
       <div class="pager-buttons">
         ${nextPattern ? `
-          <a href="#/padrao/${nextPattern.id}" class="pager-btn next-btn">Próximo: ${nextPattern.name} →</a>
+          <a href="#/padrao/${nextPattern.id}" class="pager-btn next-btn">${t("nextLabel")}: ${nextPattern.name} →</a>
         ` : `
-          <a href="#/quizzes" class="pager-btn next-btn">Ir para Quizzes →</a>
+          <a href="#/quizzes" class="pager-btn next-btn">${t("navQuizzes")} →</a>
         `}
       </div>
     </div>
   `;
 
+  // Mount Interactive Pattern Visualizer
+  const vizMount = container.querySelector("#pattern-visualizer-mount");
+  if (vizMount) {
+    renderPatternVisualizer(vizMount, p);
+  }
+
+  // Section Jump Links (prevent hash route conflict!)
+  container.querySelectorAll(".pe-jump-link").forEach(link => {
+    link.addEventListener("click", e => {
+      e.preventDefault();
+      container.querySelectorAll(".pe-jump-link").forEach(l => l.classList.remove("active"));
+      link.classList.add("active");
+      const targetId = link.getAttribute("data-jump");
+      const targetEl = container.querySelector(`#${targetId}`);
+      if (targetEl) {
+        targetEl.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    });
+  });
+
   // Bookmark Toggle
   const btnBookmark = container.querySelector("#btn-toggle-bookmark");
-  btnBookmark.addEventListener("click", () => {
-    const isNowStudied = togglePatternStudied(p.id);
-    if (isNowStudied) {
-      btnBookmark.classList.add("marked");
-      btnBookmark.innerHTML = `${icons.bookmarkCheck} <span>Marcado como Estudado</span>`;
-    } else {
-      btnBookmark.classList.remove("marked");
-      btnBookmark.innerHTML = `${icons.bookmark} <span>Marcar como Estudado</span>`;
-    }
-  });
+  if (btnBookmark) {
+    btnBookmark.addEventListener("click", () => {
+      const isNowStudied = togglePatternStudied(p.id);
+      if (isNowStudied) {
+        btnBookmark.classList.add("marked");
+        btnBookmark.innerHTML = `${icons.bookmarkCheck} <span>${t("markedStudied")}</span>`;
+      } else {
+        btnBookmark.classList.remove("marked");
+        btnBookmark.innerHTML = `${icons.bookmark} <span>${t("markStudied")}</span>`;
+      }
+    });
+  }
 
   // Code Tabs & Snippet
   const codeEl = container.querySelector("#code-snippet-el");
   const tabButtons = container.querySelectorAll(".code-tab-btn");
   const btnCopy = container.querySelector("#btn-copy-code");
 
-  function switchCode(lang) {
+  function switchCode(langKey) {
     tabButtons.forEach(btn => btn.classList.remove("active"));
-    const activeBtn = container.querySelector(`.code-tab-btn[data-lang="${lang}"]`);
+    const activeBtn = container.querySelector(`.code-tab-btn[data-lang="${langKey}"]`);
     if (activeBtn) activeBtn.classList.add("active");
-    codeEl.textContent = p.codeExamples[lang] || "// Exemplo não disponível.";
+    if (codeEl) {
+      codeEl.textContent = p.codeExamples[langKey] || "// Code snippet unavailable.";
+    }
   }
 
   tabButtons.forEach(btn => {
@@ -644,15 +700,19 @@ function renderPatternPage(container, patternId) {
     });
   });
 
-  btnCopy.addEventListener("click", () => {
-    navigator.clipboard.writeText(codeEl.textContent);
-    btnCopy.innerHTML = `${icons.check} <span>Copiado!</span>`;
-    setTimeout(() => { btnCopy.innerHTML = `${icons.copy} <span>Copiar Código</span>`; }, 2000);
-  });
+  if (btnCopy && codeEl) {
+    btnCopy.addEventListener("click", () => {
+      navigator.clipboard.writeText(codeEl.textContent);
+      btnCopy.innerHTML = `${icons.check} <span>${t("copiedCode")}</span>`;
+      setTimeout(() => {
+        btnCopy.innerHTML = `${icons.copy} <span>${t("copyCode")}</span>`;
+      }, 2000);
+    });
+  }
 
   switchCode("typescript");
 
-  // Renderiza Playground Inline
+  // Render Inline Lab
   if (p.hasPlayground && labs[p.playgroundId]) {
     const labContainer = container.querySelector("#inline-lab-container");
     if (labContainer) {
@@ -660,7 +720,7 @@ function renderPatternPage(container, patternId) {
     }
   }
 
-  // Renderiza Quiz Inline
+  // Render Inline Quiz
   const inlineQuizContainer = container.querySelector("#inline-quiz-container");
   const patternQuiz = quizzesData.find(q => q.patternId === p.id);
   if (inlineQuizContainer && patternQuiz) {
@@ -668,35 +728,32 @@ function renderPatternPage(container, patternId) {
   } else if (inlineQuizContainer) {
     inlineQuizContainer.innerHTML = `
       <div class="callout callout-info">
-        <p>Pratique este padrão e teste suas habilidades completas na nossa <a href="#/quizzes">Central de Quizzes & Desafios</a>!</p>
+        <p><a href="#/quizzes">${t("navQuizzes")} →</a></p>
       </div>
     `;
   }
 }
 
-// ----------------------------------------------------
-// 8. HUB DE LABORATÓRIOS INTERATIVOS
-// ----------------------------------------------------
 function renderLabsHubPage(container) {
   container.innerHTML = `
     <div class="page-action-header">
-      <a href="#/padrao/abstract-factory" class="pager-btn">← Ir para Padrões</a>
-      <a href="#/quizzes" class="pager-btn next-btn">Ir para Quizzes →</a>
+      <a href="#/padrao/abstract-factory" class="pager-btn">← ${t("prevLabel")}</a>
+      <a href="#/quizzes" class="pager-btn next-btn">${t("nextLabel")}: ${t("navQuizzes")} →</a>
     </div>
 
-    <h1 class="page-title">Central de Laboratórios & Campos de Prática</h1>
-    <p class="page-subtitle">Experimente e interaja com simulações dinâmicas em tempo real dos principais padrões de projeto do GoF.</p>
+    <h1 class="page-title">${t("navLabs")}</h1>
+    <p class="page-subtitle">9 interactive sandboxes for testing runtime object collaborations.</p>
 
     <div class="factory-selector-tabs mb-4" id="labs-selector-tabs">
-      <button class="btn btn-tab active" data-lab="observer-lab">Observer (Ações)</button>
-      <button class="btn btn-tab" data-lab="strategy-lab">Strategy (Frete)</button>
-      <button class="btn btn-tab" data-lab="decorator-lab">Decorator (Cafeteria)</button>
-      <button class="btn btn-tab" data-lab="command-lab">Command (Undo/Redo)</button>
-      <button class="btn btn-tab" data-lab="state-lab">State (Conexão TCP)</button>
-      <button class="btn btn-tab" data-lab="factory-lab">Abstract Factory (UI)</button>
-      <button class="btn btn-tab" data-lab="composite-lab">Composite (Árvore)</button>
-      <button class="btn btn-tab" data-lab="chain-lab">Chain of Responsibility</button>
-      <button class="btn btn-tab" data-lab="adapter-lab">Adapter (JSON/XML)</button>
+      <button type="button" class="btn btn-tab active" data-lab="observer-lab">OB · Observer</button>
+      <button type="button" class="btn btn-tab" data-lab="strategy-lab">SR · Strategy</button>
+      <button type="button" class="btn btn-tab" data-lab="decorator-lab">DC · Decorator</button>
+      <button type="button" class="btn btn-tab" data-lab="command-lab">CM · Command</button>
+      <button type="button" class="btn btn-tab" data-lab="state-lab">ST · State</button>
+      <button type="button" class="btn btn-tab" data-lab="factory-lab">AF · Abstract Factory</button>
+      <button type="button" class="btn btn-tab" data-lab="composite-lab">CP · Composite</button>
+      <button type="button" class="btn btn-tab" data-lab="chain-lab">CR · Chain of Resp.</button>
+      <button type="button" class="btn btn-tab" data-lab="adapter-lab">AD · Adapter</button>
     </div>
 
     <div id="active-lab-render-area"></div>
@@ -706,75 +763,54 @@ function renderLabsHubPage(container) {
   const area = container.querySelector("#active-lab-render-area");
 
   function switchLab(labKey) {
-    tabs.forEach(t => t.classList.remove("active"));
+    tabs.forEach(tab => tab.classList.remove("active"));
     const active = container.querySelector(`[data-lab="${labKey}"]`);
     if (active) active.classList.add("active");
-    if (labs[labKey]) {
+    if (labs[labKey] && area) {
       labs[labKey].render(area);
     }
   }
 
-  tabs.forEach(t => {
-    t.addEventListener("click", () => switchLab(t.getAttribute("data-lab")));
+  tabs.forEach(tab => {
+    tab.addEventListener("click", () => switchLab(tab.getAttribute("data-lab")));
   });
 
   switchLab("observer-lab");
 }
 
-// ----------------------------------------------------
-// 9. REFERÊNCIAS BIBLIOGRÁFICAS
-// ----------------------------------------------------
 function renderReferencesPage(container) {
   container.innerHTML = `
     <div class="page-action-header">
-      <a href="#/quizzes" class="pager-btn">← Anterior: Quizzes</a>
-      <a href="#/" class="pager-btn next-btn">Voltar ao Início →</a>
+      <a href="#/quizzes" class="pager-btn">← ${t("prevLabel")}: ${t("navQuizzes")}</a>
+      <a href="#/" class="pager-btn next-btn">${t("navHome")} →</a>
     </div>
 
-    <h1 class="page-title">Referências Bibliográficas & Literatura Recomendada</h1>
-    <p class="page-subtitle">Obras fundamentais citadas no livro GoF e literatura moderna que expandiu os conceitos de design patterns.</p>
+    <h1 class="page-title">${t("navReferences")}</h1>
+    <p class="page-subtitle">Foundational software architecture references and credits.</p>
 
     <div class="grid-2 mt-4">
       <div class="info-card">
-        <h4>1. O Livro Clássico da Gang of Four</h4>
+        <h4>1. Gang of Four (GoF)</h4>
         <p><strong>GAMMA, Erich; HELM, Richard; JOHNSON, Ralph; VLISSIDES, John.</strong></p>
-        <p class="text-muted"><em>Padrões de Projeto: Soluções Reutilizáveis de Software Orientado a Objetos.</em> Porto Alegre: Bookman, 2000 / 2007. Tradução de Luiz A. Meirelles Salgado.</p>
-        <p style="font-size: 0.85rem; margin-top: 0.5rem">Original em inglês: <em>Design Patterns: Elements of Reusable Object-Oriented Software.</em> Addison-Wesley, 1994.</p>
+        <p class="text-muted"><em>Design Patterns: Elements of Reusable Object-Oriented Software.</em> Addison-Wesley, 1994 (Bookman, 2000).</p>
       </div>
 
       <div class="info-card">
-        <h4>2. A Inspiração na Arquitetura Civil</h4>
+        <h4>2. Pattern Language</h4>
         <p><strong>ALEXANDER, Christopher et al.</strong></p>
-        <p class="text-muted"><em>A Pattern Language: Towns, Buildings, Construction.</em> Oxford University Press, New York, 1977.</p>
-        <p style="font-size: 0.85rem; margin-top: 0.5rem">A obra de Alexander que cunhou o conceito seminal de "linguagem de padrões" adotado pela comunidade de software.</p>
+        <p class="text-muted"><em>A Pattern Language: Towns, Buildings, Construction.</em> Oxford University Press, 1977.</p>
       </div>
 
       <div class="info-card">
-        <h4>3. Boas Práticas Modernas em Java</h4>
+        <h4>3. Effective Java</h4>
         <p><strong>BLOCH, Joshua.</strong></p>
-        <p class="text-muted"><em>Effective Java (3ª Edição).</em> Addison-Wesley, 2018.</p>
-        <p style="font-size: 0.85rem; margin-top: 0.5rem">Contém análises definitivas sobre Builder (Item 2), Static Factory Methods (Item 1) e Singleton com Enums (Item 3).</p>
+        <p class="text-muted"><em>Effective Java (3rd Edition).</em> Addison-Wesley, 2018.</p>
       </div>
 
       <div class="info-card">
-        <h4>4. Refatoração e Padrões Corporativos</h4>
+        <h4>4. Refactoring & Enterprise Patterns</h4>
         <p><strong>FOWLER, Martin.</strong></p>
-        <p class="text-muted"><em>Refactoring: Improving the Design of Existing Code.</em> Addison-Wesley, 1999 (2ª Ed. com JS em 2018).</p>
-        <p style="font-size: 0.85rem; margin-top: 0.5rem">Também autor de <em>Patterns of Enterprise Application Architecture</em> (2002) e <em>Analysis Patterns</em>.</p>
-      </div>
-
-      <div class="info-card">
-        <h4>5. Clean Code & Arquitetura</h4>
-        <p><strong>MARTIN, Robert C. (Uncle Bob).</strong></p>
-        <p class="text-muted"><em>Clean Architecture: A Craftsman's Guide to Software Structure and Design.</em> Prentice Hall, 2017.</p>
-        <p style="font-size: 0.85rem; margin-top: 0.5rem">Princípios SOLID e como os padrões GoF se integram à separação de camadas.</p>
-      </div>
-
-      <div class="info-card">
-        <h4>6. Recursos Web de Destaque</h4>
-        <p><strong>SHVETS, Alexander (Refactoring Guru).</strong></p>
-        <p class="text-muted"><em>Dive Into Design Patterns.</em> Refactoring.Guru, 2021.</p>
-        <p style="font-size: 0.85rem; margin-top: 0.5rem">Referência visual contemporânea amplamente utilizada por desenvolvedores em todo o mundo.</p>
+        <p class="text-muted"><em>Refactoring: Improving the Design of Existing Code.</em> Addison-Wesley, 2018.</p>
       </div>
     </div>
   `;
