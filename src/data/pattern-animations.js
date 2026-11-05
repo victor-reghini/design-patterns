@@ -12,6 +12,172 @@ function toHexBytes(str, targetLen = 8) {
   return { bytes, ascii: clean };
 }
 
+export function buildObjectInspectorState(patternCode, step, nodesMap, selectedNodeId = null) {
+  const fromNode = nodesMap[step.packet.from] || { id: "caller", label: "Client", addr: "0x1000", stereotype: "«caller»", color: "blue" };
+  const toNode = nodesMap[step.packet.to] || { id: "target", label: "Target", addr: "0x2000", stereotype: "«target»", color: "emerald" };
+  const activeId = selectedNodeId || toNode.id;
+  const isSnapshot = selectedNodeId === "snapshot";
+  const inspectedNode = nodesMap[activeId] || toNode;
+
+  const currentRole = inspectedNode.stereotype ? inspectedNode.stereotype.replace(/[«»]/g, "") : "participant";
+  const rawState = (step.nodeStates && step.nodeStates[inspectedNode.id]) || "ACTIVE";
+
+  if (isSnapshot) {
+    const scopeData = {
+      stepIndex: `0${step.id}`,
+      patternCode: patternCode,
+      activeTransaction: `${fromNode.label} -> ${toNode.label}`,
+      dispatchedCall: step.packet.call,
+      returnContract: step.packet.returnVal,
+      messageType: step.packet.type || "DISPATCH",
+      participants: Object.values(nodesMap).map(n => ({
+        id: n.id,
+        class: n.label,
+        role: n.stereotype,
+        address: n.addr,
+        status: (step.nodeStates && step.nodeStates[n.id]) || "IDLE"
+      }))
+    };
+    return {
+      selectedNode: { id: "snapshot", label: "Scope Snapshot", addr: "STACK_FRAME", stereotype: "«context»", color: "cyan" },
+      data: scopeData,
+      explanation: {
+        pt: "Visão global de todos os participantes do padrão e seus estados instantâneos durante esta etapa.",
+        en: "Global snapshot of all pattern participants and their active states during this step.",
+        es: "Instantánea global de todos los participantes del patrón y sus estados activos en este paso."
+      }
+    };
+  }
+
+  const attributes = {
+    status: rawState,
+    inMemoryAt: inspectedNode.addr,
+    role: currentRole
+  };
+
+  if (inspectedNode.id === toNode.id) {
+    attributes.receivedCall = step.packet.call;
+    attributes.invokedBy = `${fromNode.label} (${fromNode.addr})`;
+    attributes.returnPayload = step.packet.returnVal;
+  } else if (inspectedNode.id === fromNode.id) {
+    attributes.outgoingCall = step.packet.call;
+    attributes.targetRecipient = `${toNode.label} (${toNode.addr})`;
+    attributes.expectedReturn = step.packet.returnVal;
+  }
+
+  const code = (patternCode || "").toUpperCase();
+  if (code === "AF") {
+    attributes.family = "Aqua / CrossPlatform";
+    attributes.contract = "GUIFactory";
+    attributes.guarantee = "Cohesive Product Family";
+  } else if (code === "BL") {
+    attributes.assemblyStep = `Step ${step.id} of 5`;
+    attributes.fluentMethod = step.packet.call;
+    attributes.mutatedPart = step.packet.returnVal;
+  } else if (code === "FM") {
+    attributes.creatorHook = "createTransport()";
+    attributes.polymorphicType = inspectedNode.label;
+    attributes.decoupled = true;
+  } else if (code === "PR") {
+    attributes.cloneMethod = "deepClone()";
+    attributes.prototypeRegistry = "PrototypeRegistry @ 0x2300";
+    attributes.clonedReference = step.packet.returnVal;
+  } else if (code === "SI") {
+    attributes.instancePointer = "0x6150";
+    attributes.threadLock = "MUTEX_LOCKED";
+    attributes.singletonGuarantee = "Single Instance Per Process";
+  } else if (code === "AD") {
+    attributes.adaptedInterface = "PaymentProcessor";
+    attributes.adapteeWrapped = "LegacyBillingSDK (0x3500)";
+    attributes.formatTranslation = "JSON -> XML_SOAP";
+  } else if (code === "BR") {
+    attributes.abstraction = "RemoteControl";
+    attributes.implementor = "DeviceDriver";
+    attributes.decoupling = "Independent Class Hierarchies";
+  } else if (code === "CP") {
+    attributes.compositeType = inspectedNode.stereotype.includes("leaf") ? "LeafNode" : "CompositeContainer";
+    attributes.uniformOperation = "getSize()";
+    attributes.recursionDepth = step.id;
+  } else if (code === "DE") {
+    attributes.decoratorType = inspectedNode.label;
+    attributes.forwardedTo = "wrappedComponent";
+    attributes.addedBehavior = step.packet.call;
+  } else if (code === "FA") {
+    attributes.facadeBoundary = "VideoConverterFacade";
+    attributes.shieldedSubsystems = ["CodecEngine", "AudioExtractor", "BitrateMuxer"];
+    attributes.highLevelApi = step.packet.call;
+  } else if (code === "FL") {
+    attributes.intrinsicState = "GlyphMetrics + FontFace ('Inter-Bold')";
+    attributes.extrinsicContext = "{ x: 12, y: 40, color: '#38bdf8' }";
+    attributes.sharedInstance = "0x4300";
+  } else if (code === "PX") {
+    attributes.proxyType = "Virtual Lazy + Auth Guard";
+    attributes.realSubject = "DatabaseQueryService @ 0x6050";
+    attributes.cachedResult = step.packet.returnVal;
+  } else if (code === "CR") {
+    attributes.handlerPosition = currentRole;
+    attributes.handled = step.id >= 4;
+    attributes.forwardTarget = step.id < 4 ? "next.handle(request)" : "haltChain()";
+  } else if (code === "CM") {
+    attributes.commandEncapsulated = step.packet.call;
+    attributes.historyStackDepth = Math.max(1, step.id);
+    attributes.isUndoable = true;
+  } else if (code === "IN") {
+    attributes.grammarRule = "Expression::interpret(context)";
+    attributes.terminalEvaluation = step.packet.returnVal;
+  } else if (code === "IT") {
+    attributes.cursor = `Index [${Math.min(3, step.id - 1)}]`;
+    attributes.hasNext = step.id < 5;
+    attributes.currentYield = step.packet.returnVal;
+  } else if (code === "ME") {
+    attributes.centralRouter = "AirTrafficControlMediator (0x3750)";
+    attributes.colleaguesDecoupled = true;
+    attributes.dispatchedAction = step.packet.call;
+  } else if (code === "MM") {
+    attributes.mementoSnapshot = "Snapshot#v" + step.id;
+    attributes.encapsulatedState = "{ stateCode: 0x44B0, version: 1 }";
+    attributes.caretakerOnlyStores = true;
+  } else if (code === "OB") {
+    attributes.broadcastEvent = "ON_PRICE_UPDATE";
+    attributes.observersNotified = ["CandlestickChart", "AlertNotifier", "AuditLogger"];
+    attributes.eventPayload = step.packet.call;
+  } else if (code === "ST") {
+    attributes.activeFSMState = inspectedNode.label;
+    attributes.transitionTrigger = step.packet.call;
+    attributes.stateEncapsulated = true;
+  } else if (code === "SY") {
+    attributes.selectedAlgorithm = inspectedNode.label;
+    attributes.strategyContract = "ShippingStrategy";
+    attributes.calculatedOutput = step.packet.returnVal;
+  } else if (code === "TM") {
+    attributes.templateMethod = "processDocument()";
+    attributes.invariantStep = step.id === 1 || step.id === 5;
+    attributes.primitiveHook = step.id === 2 || step.id === 3;
+  } else if (code === "VI") {
+    attributes.doubleDispatch = "visitor.visitConcreteElement(this)";
+    attributes.dynamicResolvedMethod = step.packet.call;
+    attributes.astNodeUnchanged = true;
+  }
+
+  const resultData = {
+    class: inspectedNode.label,
+    address: inspectedNode.addr,
+    role: inspectedNode.stereotype,
+    stepStatus: rawState,
+    attributes: attributes
+  };
+
+  return {
+    selectedNode: inspectedNode,
+    data: resultData,
+    explanation: {
+      pt: `Estado do objeto ${inspectedNode.label} durante a etapa 0${step.id}: reflete a responsabilidade do papel '${currentRole}'.`,
+      en: `State of object ${inspectedNode.label} during step 0${step.id}: reflects the responsibility of role '${currentRole}'.`,
+      es: `Estado del objeto ${inspectedNode.label} en el paso 0${step.id}: refleja la responsabilidad del rol '${currentRole}'.`
+    }
+  };
+}
+
 export function buildMemoryFrame(patternCode, stepIdx, packet, nodesMap) {
   const fromNode = nodesMap[packet.from] || { addr: "0x1000", label: packet.from };
   const toNode = nodesMap[packet.to] || { addr: "0x2000", label: packet.to };

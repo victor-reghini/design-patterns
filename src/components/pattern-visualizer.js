@@ -1,8 +1,75 @@
-import { patternAnimations, buildMemoryFrame } from "../data/pattern-animations.js";
+import { patternAnimations, buildObjectInspectorState } from "../data/pattern-animations.js";
 import { getLang, t } from "../data/i18n.js";
 import { icons } from "./icons.js";
 
 let activeTimer = null;
+
+function highlightJson(obj) {
+  let json = typeof obj === "string" ? obj : JSON.stringify(obj, null, 2);
+  json = json.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+    let cls = "json-number";
+    if (/^"/.test(match)) {
+      if (/:$/.test(match)) {
+        cls = "json-key";
+      } else {
+        cls = "json-string";
+      }
+    } else if (/true|false/.test(match)) {
+      cls = "json-boolean";
+    } else if (/null/.test(match)) {
+      cls = "json-null";
+    }
+    return `<span class="${cls}">${match}</span>`;
+  });
+}
+
+function calculateSafePillPosition(fromNode, toNode, nodes, call) {
+  const isSelfCall = fromNode.id === toNode.id;
+  const callStr = call || "";
+  const pillW = Math.max(120, Math.min(220, callStr.length * 7.2 + 24));
+  const pillH = 28;
+
+  const rawMidX = isSelfCall ? fromNode.x : (fromNode.x + toNode.x) / 2;
+  const midX = Math.max(pillW / 2 + 10, Math.min(740 - pillW / 2 - 10, rawMidX));
+
+  function hasCollision(x, y) {
+    return nodes.some(n => {
+      const ox = Math.abs(n.x - x) < (156 / 2 + pillW / 2 + 2);
+      const oy = Math.abs(n.y - y) < (68 / 2 + pillH / 2 + 2);
+      return ox && oy;
+    });
+  }
+
+  const minY = Math.min(fromNode.y, toNode.y);
+  const maxY = Math.max(fromNode.y, toNode.y);
+
+  let candidates = [];
+  if (minY >= 130) {
+    candidates = [52, 45, 60, 275, 285, 305];
+  } else if (maxY <= 120) {
+    candidates = [275, 285, 155, 305, 52];
+  } else {
+    candidates = [155, 20, 305, 52, 275];
+  }
+
+  for (const cy of candidates) {
+    if (!hasCollision(midX, cy)) {
+      return { midX, midY: cy, pillW, pillH, minY, maxY };
+    }
+  }
+
+  for (const dx of [-30, 30, -60, 60]) {
+    const sx = Math.max(pillW / 2 + 10, Math.min(740 - pillW / 2 - 10, midX + dx));
+    for (const cy of candidates) {
+      if (!hasCollision(sx, cy)) {
+        return { midX: sx, midY: cy, pillW, pillH, minY, maxY };
+      }
+    }
+  }
+
+  return { midX, midY: 52, pillW, pillH, minY, maxY };
+}
 
 export function stopActiveVisualizerTimer() {
   if (activeTimer) {
@@ -23,7 +90,7 @@ export function renderPatternVisualizer(container, pattern) {
   let currentStepIndex = 0;
   let isPlaying = false;
   let speedMs = 2600;
-  let selectedFieldIndex = 2; // Default highlight: VTable / Method Selector
+  let selectedTargetId = null;
 
   const nodesMap = {};
   anim.nodes.forEach(n => {
@@ -41,15 +108,28 @@ export function renderPatternVisualizer(container, pattern) {
     const lang = getLang();
     const step = anim.steps[currentStepIndex];
     const totalSteps = anim.steps.length;
-    const memoryFields = buildMemoryFrame(anim.code, step.id, step.packet, nodesMap);
-    const activeField = memoryFields[selectedFieldIndex] || memoryFields[0];
 
     const fromNode = nodesMap[step.packet.from] || anim.nodes[0];
     const toNode = nodesMap[step.packet.to] || anim.nodes[1] || anim.nodes[0];
-
     const isSelfCall = fromNode.id === toNode.id;
-    const midX = isSelfCall ? fromNode.x : (fromNode.x + toNode.x) / 2;
-    const midY = isSelfCall ? Math.max(38, fromNode.y - 58) : (fromNode.y + toNode.y) / 2;
+
+    const stateInfo = buildObjectInspectorState(anim.code, step, nodesMap, selectedTargetId);
+    const currentTargetId = stateInfo.selectedNode.id;
+
+    const pill = calculateSafePillPosition(fromNode, toNode, anim.nodes, step.packet.call);
+
+    let leaderLineSvg = "";
+    if (pill.midY < pill.minY - 34) {
+      leaderLineSvg = `
+        <line x1="${pill.midX}" y1="${pill.midY + 15}" x2="${pill.midX}" y2="${pill.minY - 34}" class="pe-pill-leader-line" />
+        <circle cx="${pill.midX}" cy="${pill.minY - 34}" r="2.5" class="pe-pill-leader-dot" />
+      `;
+    } else if (pill.midY > pill.maxY + 34) {
+      leaderLineSvg = `
+        <line x1="${pill.midX}" y1="${pill.maxY + 34}" x2="${pill.midX}" y2="${pill.midY - 15}" class="pe-pill-leader-line" />
+        <circle cx="${pill.midX}" cy="${pill.maxY + 34}" r="2.5" class="pe-pill-leader-dot" />
+      `;
+    }
 
     container.innerHTML = `
       <section class="pe-visualizer-shell" aria-label="${t("vizTitle")}">
@@ -106,7 +186,7 @@ export function renderPatternVisualizer(container, pattern) {
 
         <!-- Main SVG Topology & Animated Message Flow Canvas -->
         <div class="pe-canvas-container">
-          <svg class="pe-topology-svg" viewBox="0 0 740 300" role="img" aria-label="${pattern.name} runtime topology">
+          <svg class="pe-topology-svg" viewBox="0 0 740 330" role="img" aria-label="${pattern.name} runtime topology">
             <defs>
               <marker id="pe-arrow-muted" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
                 <path d="M 0 1 L 10 5 L 0 9 z" fill="var(--text-muted)" opacity="0.55" />
@@ -185,9 +265,10 @@ export function renderPatternVisualizer(container, pattern) {
               `;
             }).join("")}
 
-            <!-- Floating Call Packet Pill -->
-            <g class="pe-floating-packet-pill" transform="translate(${midX}, ${midY})">
-              <rect x="-92" y="-15" width="184" height="30" rx="6" class="pe-packet-pill-bg" />
+            <!-- Floating Call Packet Pill (Positioned above/below to never obstruct flowchart components) -->
+            ${leaderLineSvg}
+            <g class="pe-floating-packet-pill" transform="translate(${pill.midX}, ${pill.midY})">
+              <rect x="${-pill.pillW / 2}" y="-15" width="${pill.pillW}" height="30" rx="6" class="pe-packet-pill-bg" />
               <text x="0" y="4" text-anchor="middle" class="pe-packet-pill-text">${step.packet.call}</text>
             </g>
           </svg>
@@ -229,65 +310,92 @@ export function renderPatternVisualizer(container, pattern) {
           <p class="pe-step-desc">${getLoc(step.desc)}</p>
         </div>
 
-        <!-- Deep Packet / Memory Frame Split Inspector -->
+        <!-- Live Object State & Runtime Architecture Inspector -->
         <div class="pe-inspector-grid">
-          <!-- Left: Layer & Call Stack Breakdown -->
+          <!-- Left: Call Stack & Runtime Participants -->
           <div class="pe-inspector-panel">
             <div class="pe-inspector-header">
               <span>${t("inspectorCallStackTitle")}</span>
-              <span class="pe-inspector-sub">4 FRAMES • 32 BYTES</span>
+              <span class="pe-inspector-sub">${fromNode.label} → ${toNode.label}</span>
             </div>
-            <div class="pe-layer-list" role="listbox" aria-label="${t("inspectorCallStackTitle")}">
-              ${memoryFields.map((field, fIdx) => `
-                <div
-                  class="pe-layer-row ${selectedFieldIndex === fIdx ? "selected" : ""} color-${field.color}"
-                  data-field-idx="${fIdx}"
-                  tabindex="0"
-                  role="option"
-                  aria-selected="${selectedFieldIndex === fIdx}"
-                >
-                  <div class="pe-layer-row-top">
-                    <span class="pe-layer-byte-range">[0x${field.byteStart.toString(16).padStart(2, "0").toUpperCase()}..0x${field.byteEnd.toString(16).padStart(2, "0").toUpperCase()}]</span>
-                    <strong class="pe-layer-name">${field.name}</strong>
-                  </div>
-                  <div class="pe-layer-value"><code>${field.value}</code></div>
+            <div class="pe-participants-list" role="listbox" aria-label="${t("inspectorCallStackTitle")}">
+              <!-- Target Receiver Card -->
+              <div
+                class="pe-participant-card ${currentTargetId === toNode.id ? "selected" : ""} color-${toNode.color}"
+                data-node-id="${toNode.id}"
+                tabindex="0"
+                role="option"
+                aria-selected="${currentTargetId === toNode.id}"
+              >
+                <div class="pe-participant-header">
+                  <span class="pe-participant-badge receiver">${t("tabReceiver")}</span>
+                  <span class="pe-participant-addr">${toNode.addr}</span>
                 </div>
-              `).join("")}
+                <strong class="pe-participant-title">${toNode.label}</strong>
+                <div class="pe-participant-role">${toNode.stereotype}</div>
+                <div class="pe-participant-state">
+                  <span class="pe-state-indicator">●</span>
+                  <span>${step.nodeStates[toNode.id] || "ACTIVE"}</span>
+                </div>
+              </div>
+
+              <!-- Caller Sender Card -->
+              <div
+                class="pe-participant-card ${currentTargetId === fromNode.id ? "selected" : ""} color-${fromNode.color}"
+                data-node-id="${fromNode.id}"
+                tabindex="0"
+                role="option"
+                aria-selected="${currentTargetId === fromNode.id}"
+              >
+                <div class="pe-participant-header">
+                  <span class="pe-participant-badge sender">${t("tabSender")}</span>
+                  <span class="pe-participant-addr">${fromNode.addr}</span>
+                </div>
+                <strong class="pe-participant-title">${fromNode.label}</strong>
+                <div class="pe-participant-role">${fromNode.stereotype}</div>
+                <div class="pe-participant-state">
+                  <span class="pe-state-indicator">●</span>
+                  <span>${step.nodeStates[fromNode.id] || "CALLING"}</span>
+                </div>
+              </div>
+
+              <!-- Scope Snapshot Card -->
+              <div
+                class="pe-participant-card ${currentTargetId === "snapshot" ? "selected" : ""}"
+                data-node-id="snapshot"
+                tabindex="0"
+                role="option"
+                aria-selected="${currentTargetId === "snapshot"}"
+              >
+                <div class="pe-participant-header">
+                  <span class="pe-participant-badge snapshot">GLOBAL</span>
+                  <span class="pe-participant-addr">${anim.nodes.length} NÓS</span>
+                </div>
+                <strong class="pe-participant-title">${t("tabSnapshot")}</strong>
+                <div class="pe-participant-role">${step.packet.call} ⇒ ${step.packet.returnVal}</div>
+              </div>
             </div>
           </div>
 
-          <!-- Right: Byte-by-Byte Hex & ASCII Memory Dump -->
+          <!-- Right: Live Object State Inspector -->
           <div class="pe-inspector-panel">
             <div class="pe-inspector-header">
-              <span>${t("inspectorByteTitle")}</span>
-              <span class="pe-inspector-sub">HEAP @ ${toNode.addr}</span>
-            </div>
-            <div class="pe-hexdump-table" role="region" aria-label="${t("inspectorByteTitle")}">
-              <div class="pe-hexdump-head">
-                <span>${t("offsetCol")}</span>
-                <span>${t("hexCol")}</span>
-                <span>${t("asciiCol")}</span>
-              </div>
-              ${memoryFields.map((field, fIdx) => `
-                <div
-                  class="pe-hexdump-row ${selectedFieldIndex === fIdx ? "selected" : ""} color-${field.color}"
-                  data-field-idx="${fIdx}"
-                >
-                  <span class="pe-hex-offset">${field.offset}</span>
-                  <span class="pe-hex-bytes">
-                    ${field.bytes.map(b => `<span class="pe-byte-cell">${b}</span>`).join("")}
-                  </span>
-                  <span class="pe-hex-ascii">|${field.ascii}|</span>
-                </div>
-              `).join("")}
+              <span>${t("inspectorObjectTitle")}</span>
+              <span class="pe-inspector-sub">${stateInfo.selectedNode.label} (${stateInfo.selectedNode.addr})</span>
             </div>
 
-            <div class="pe-decoded-tooltip">
-              <div class="pe-decoded-title">
-                <span class="pe-decoded-tag">${t("hoveredFieldLabel")}: ${activeField.name}</span>
-                <code>0x${activeField.byteStart.toString(16).padStart(2, "0").toUpperCase()} - 0x${activeField.byteEnd.toString(16).padStart(2, "0").toUpperCase()} (8 bytes)</code>
+            <div class="pe-object-inspector-body">
+              <!-- Highlighted Live JSON Object State -->
+              <pre class="pe-object-state-code" tabindex="0"><code>${highlightJson(stateInfo.data)}</code></pre>
+
+              <!-- State Mutation Callout -->
+              <div class="pe-state-mutation-callout">
+                <div class="pe-mutation-header">
+                  <span class="pe-mutation-badge">${stateInfo.selectedNode.stereotype}</span>
+                  <strong class="pe-mutation-title">${t("stateExplanationTitle")}</strong>
+                </div>
+                <p class="pe-mutation-desc">${getLoc(stateInfo.explanation)}</p>
               </div>
-              <p class="pe-decoded-desc">${getLoc(activeField.desc)}</p>
             </div>
           </div>
         </div>
@@ -387,35 +495,39 @@ export function renderPatternVisualizer(container, pattern) {
       });
     });
 
-    // Inspector field selection (click & hover & keyboard)
-    container.querySelectorAll("[data-field-idx]").forEach(row => {
-      const selectField = () => {
-        const idx = parseInt(row.getAttribute("data-field-idx"), 10);
-        if (!Number.isNaN(idx) && idx !== selectedFieldIndex) {
-          selectedFieldIndex = idx;
+    // Node / Tab selection for live object inspector
+    container.querySelectorAll("[data-node-id]").forEach(el => {
+      const selectNode = () => {
+        const id = el.getAttribute("data-node-id");
+        if (id && id !== selectedTargetId) {
+          selectedTargetId = id;
           render();
         }
       };
-      row.addEventListener("click", selectField);
-      row.addEventListener("keydown", e => {
+      el.addEventListener("click", selectNode);
+      el.addEventListener("keydown", e => {
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
-          selectField();
+          selectNode();
         }
       });
     });
 
-    // SVG node interaction
+    // SVG node interaction in topology graph
     container.querySelectorAll(".pe-node-group").forEach(nodeEl => {
-      const selectPointerField = () => {
-        selectedFieldIndex = 1; // Focus Heap Pointers field
-        render();
+      const selectGraphNode = () => {
+        const nodeIdx = parseInt(nodeEl.getAttribute("data-node-idx"), 10);
+        const clickedNode = anim.nodes[nodeIdx];
+        if (clickedNode && clickedNode.id !== selectedTargetId) {
+          selectedTargetId = clickedNode.id;
+          render();
+        }
       };
-      nodeEl.addEventListener("click", selectPointerField);
+      nodeEl.addEventListener("click", selectGraphNode);
       nodeEl.addEventListener("keydown", e => {
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
-          selectPointerField();
+          selectGraphNode();
         }
       });
     });
