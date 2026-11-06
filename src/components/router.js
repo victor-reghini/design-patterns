@@ -3,7 +3,7 @@ import { patternAnimations } from "../data/pattern-animations.js";
 import { bookOverview } from "../data/book-overview.js";
 import { quizzesData } from "../data/quizzes-data.js";
 import { getLang, t, patternI18n } from "../data/i18n.js";
-import { renderSingleQuiz, renderQuizzesPage } from "./quiz-engine.js";
+import { renderSingleQuiz, renderPatternExercises, renderQuizzesPage } from "./quiz-engine.js";
 import { labs } from "./labs.js";
 import { getStudiedPatterns, togglePatternStudied } from "./sidebar.js";
 import { renderPatternVisualizer, stopActiveVisualizerTimer } from "./pattern-visualizer.js";
@@ -722,17 +722,10 @@ function renderPatternPage(container, patternId) {
     }
   }
 
-  // Render Inline Quiz
+  // Render Inline Quiz & Scenarios for this pattern
   const inlineQuizContainer = container.querySelector("#inline-quiz-container");
-  const patternQuiz = quizzesData.find(q => q.patternId === p.id);
-  if (inlineQuizContainer && patternQuiz) {
-    renderSingleQuiz(inlineQuizContainer, patternQuiz);
-  } else if (inlineQuizContainer) {
-    inlineQuizContainer.innerHTML = `
-      <div class="callout callout-info">
-        <p><a href="#/quizzes">${t("navQuizzes")} →</a></p>
-      </div>
-    `;
+  if (inlineQuizContainer) {
+    renderPatternExercises(inlineQuizContainer, p.id);
   }
 }
 
