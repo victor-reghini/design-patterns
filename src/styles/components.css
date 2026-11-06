@@ -753,7 +753,8 @@ h1.page-title {
 }
 
 .pe-ctrl-btn.primary:hover {
-  background-color: var(--accent-primary-hover);
+  background-color: var(--accent-solid-bg-hover, var(--accent-primary-hover));
+  border-color: var(--accent-solid-bg-hover, var(--accent-primary-hover));
   color: var(--accent-solid-text);
 }
 
@@ -1332,6 +1333,12 @@ h1.page-title {
   background-color: var(--accent-solid-bg);
   color: var(--accent-solid-text);
   border-color: var(--accent-solid-bg);
+}
+
+.btn-primary:hover {
+  background-color: var(--accent-solid-bg-hover, var(--accent-primary-hover));
+  border-color: var(--accent-solid-bg-hover, var(--accent-primary-hover));
+  color: var(--accent-solid-text);
 }
 
 .btn-secondary {

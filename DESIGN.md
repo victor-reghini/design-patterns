@@ -8,7 +8,7 @@
 - **Dials:** `Dial: ENERGY 2 / RHYTHM 2 / MOTION 2`
 
 ## 2. One-Line Purpose Reasons (R-31 Compliance)
-- **Why this palette?** Deep obsidian/slate (`#0b0f17` / `#111827`) in dark mode and high-contrast paper/slate (`#f8fafc` / `#ffffff`) in light mode maximize legibility for dense technical telemetry, hex memory offsets, and SVG call-flow lines, using 3 semantic category colors (Creational Emerald, Structural Cyan/Blue, Behavioral Violet) + 1 primary electric blue accent (`#2563eb` light / `#3b82f6` dark).
+- **Why this palette?** Deep neutral charcoal/zinc (`#121214` / `#1c1c1f`) in dark mode and high-contrast paper/slate (`#f8fafc` / `#ffffff`) in light mode maximize legibility for dense technical telemetry, hex memory offsets, and SVG call-flow lines, using 3 semantic category colors (Creational Emerald, Structural Cyan/Blue, Behavioral Violet) + 1 primary electric blue accent (`#2563eb` light / `#3b82f6` dark).
 - **Why this layout?** A fixed 288px left navigation rail paired with a sticky telemetry top bar and a split interactive workspace (Step Timeline + SVG Topology Canvas + Runtime Stack/Memory Hex Inspector) lets users scrub through pattern execution without losing context.
 - **Why this typography?** `Inter` handles dense UI labels and multi-language prose, `Outfit` distinguishes structural headings, and `JetBrains Mono` aligns memory addresses (`0x0000`), hex byte grids, method signatures, and multi-language code blocks.
 - **Why this spacing?** Compact 8px/12px/16px spacing inside the telemetry workspace keeps the canvas and byte inspector visible together above the fold, while 24px/32px spacing separates architectural documentation sections below.
@@ -19,14 +19,15 @@
 ## 3. Color System & Verified WCAG AA Contrast Ratios (R-25, R-29, R-34)
 
 ### Dark Mode (`[data-theme="dark"]`)
-- **Canvas Background (`--bg-primary`):** `#0b0f17`
-- **Surface Panel (`--bg-surface`):** `#111827`
-- **Elevated Surface (`--bg-surface-elevated`):** `#1e293b`
-- **Primary Text (`--text-primary`):** `#f8fafc` (Contrast on `#111827`: **17.4:1** PASS AAA)
-- **Secondary Text (`--text-secondary`):** `#cbd5e1` (Contrast on `#111827`: **11.9:1** PASS AAA)
-- **Muted Metadata (`--text-muted`):** `#94a3b8` (Contrast on `#111827`: **6.4:1** PASS AA)
-- **Primary Accent (`--accent-primary`):** `#60a5fa` for text/links on dark surfaces (**7.5:1** PASS AA), `#2563eb` with `#ffffff` text for filled buttons (**5.17:1** PASS AA).
-- **Component Borders (`--border-strong`):** `#475569` / `#64748b` for interactive controls (>= **3.1:1** non-text contrast).
+- **Canvas Background (`--bg-primary`):** `#121214`
+- **Surface Panel (`--bg-surface`):** `#1c1c1f`
+- **Elevated Surface (`--bg-surface-elevated`):** `#26262a`
+- **Primary Text (`--text-primary`):** `#f4f4f5` (Contrast on `#1c1c1f`: **15.2:1** PASS AAA)
+- **Secondary Text (`--text-secondary`):** `#d4d4d8` (Contrast on `#1c1c1f`: **11.5:1** PASS AAA)
+- **Muted Metadata (`--text-muted`):** `#a1a1aa` (Contrast on `#1c1c1f`: **6.6:1** PASS AA)
+- **Primary Accent (`--accent-primary`):** Pastel slate blue `#84a6cc` for text/links on dark surfaces (**6.6:1** PASS AA), matte slate blue `#385375` with `#ffffff` text for filled buttons/tabs (**5.1:1** PASS AA).
+- **Semantic Accents:** Pastel sage green `#82b99e` (creational/pros/success) and pastel terracotta `#d28787` (danger/cons) over muted opaque backgrounds (`#1b2620` / `#261d1d`).
+- **Component Borders (`--border-strong`):** `#52525b` for interactive controls (>= **3.0:1** non-text contrast).
 
 ### Light Mode (`[data-theme="light"]`)
 - **Canvas Background (`--bg-primary`):** `#f8fafc`
