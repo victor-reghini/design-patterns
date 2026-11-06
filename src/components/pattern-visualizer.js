@@ -5,6 +5,31 @@ import { icons } from "./icons.js";
 
 let activeTimer = null;
 
+function getBoxBorderPoint(center, target, w = 146, h = 58, extraOffset = 0) {
+  const dx = target.x - center.x;
+  const dy = target.y - center.y;
+  if (dx === 0 && dy === 0) return { x: center.x, y: center.y };
+
+  const hw = w / 2;
+  const hh = h / 2;
+  const scale = Math.min(
+    Math.abs(hw / (dx || 0.0001)),
+    Math.abs(hh / (dy || 0.0001))
+  );
+
+  const bx = center.x + dx * scale;
+  const by = center.y + dy * scale;
+
+  if (extraOffset !== 0) {
+    const dist = Math.hypot(dx, dy);
+    const ox = (dx / dist) * extraOffset;
+    const oy = (dy / dist) * extraOffset;
+    return { x: bx + ox, y: by + oy };
+  }
+
+  return { x: bx, y: by };
+}
+
 function calculateSafePillPosition(fromNode, toNode, nodes, call) {
   const isSelfCall = fromNode.id === toNode.id;
   const callStr = call || "";
@@ -12,12 +37,12 @@ function calculateSafePillPosition(fromNode, toNode, nodes, call) {
   const pillH = 28;
 
   const rawMidX = isSelfCall ? fromNode.x : (fromNode.x + toNode.x) / 2;
-  const midX = Math.max(pillW / 2 + 10, Math.min(740 - pillW / 2 - 10, rawMidX));
+  const midX = Math.max(pillW / 2 + 10, Math.min(880 - pillW / 2 - 10, rawMidX));
 
   function hasCollision(x, y) {
     return nodes.some(n => {
-      const ox = Math.abs(n.x - x) < (156 / 2 + pillW / 2 + 2);
-      const oy = Math.abs(n.y - y) < (68 / 2 + pillH / 2 + 2);
+      const ox = Math.abs(n.x - x) < (146 / 2 + pillW / 2 + 6);
+      const oy = Math.abs(n.y - y) < (58 / 2 + pillH / 2 + 6);
       return ox && oy;
     });
   }
@@ -27,11 +52,11 @@ function calculateSafePillPosition(fromNode, toNode, nodes, call) {
 
   let candidates = [];
   if (minY >= 130) {
-    candidates = [52, 45, 60, 275, 285, 305];
-  } else if (maxY <= 120) {
-    candidates = [275, 285, 155, 305, 52];
+    candidates = [46, 38, 292, 308];
+  } else if (maxY <= 130) {
+    candidates = [288, 300, 46];
   } else {
-    candidates = [155, 20, 305, 52, 275];
+    candidates = [46, 288, 165];
   }
 
   for (const cy of candidates) {
@@ -40,8 +65,8 @@ function calculateSafePillPosition(fromNode, toNode, nodes, call) {
     }
   }
 
-  for (const dx of [-30, 30, -60, 60]) {
-    const sx = Math.max(pillW / 2 + 10, Math.min(740 - pillW / 2 - 10, midX + dx));
+  for (const dx of [-35, 35, -70, 70]) {
+    const sx = Math.max(pillW / 2 + 10, Math.min(880 - pillW / 2 - 10, midX + dx));
     for (const cy of candidates) {
       if (!hasCollision(sx, cy)) {
         return { midX: sx, midY: cy, pillW, pillH, minY, maxY };
@@ -49,7 +74,7 @@ function calculateSafePillPosition(fromNode, toNode, nodes, call) {
     }
   }
 
-  return { midX, midY: 52, pillW, pillH, minY, maxY };
+  return { midX, midY: 46, pillW, pillH, minY, maxY };
 }
 
 export function stopActiveVisualizerTimer() {
@@ -100,15 +125,15 @@ export function renderPatternVisualizer(container, pattern) {
     const pill = calculateSafePillPosition(fromNode, toNode, anim.nodes, step.packet.call);
 
     let leaderLineSvg = "";
-    if (pill.midY < pill.minY - 34) {
+    if (pill.midY < pill.minY - 29) {
       leaderLineSvg = `
-        <line x1="${pill.midX}" y1="${pill.midY + 15}" x2="${pill.midX}" y2="${pill.minY - 34}" class="pe-pill-leader-line" />
-        <circle cx="${pill.midX}" cy="${pill.minY - 34}" r="2.5" class="pe-pill-leader-dot" />
+        <line x1="${pill.midX}" y1="${pill.midY + 15}" x2="${pill.midX}" y2="${pill.minY - 29}" class="pe-pill-leader-line" />
+        <circle cx="${pill.midX}" cy="${pill.minY - 29}" r="2.5" class="pe-pill-leader-dot" />
       `;
-    } else if (pill.midY > pill.maxY + 34) {
+    } else if (pill.midY > pill.maxY + 29) {
       leaderLineSvg = `
-        <line x1="${pill.midX}" y1="${pill.maxY + 34}" x2="${pill.midX}" y2="${pill.midY - 15}" class="pe-pill-leader-line" />
-        <circle cx="${pill.midX}" cy="${pill.maxY + 34}" r="2.5" class="pe-pill-leader-dot" />
+        <line x1="${pill.midX}" y1="${pill.maxY + 29}" x2="${pill.midX}" y2="${pill.midY - 15}" class="pe-pill-leader-line" />
+        <circle cx="${pill.midX}" cy="${pill.maxY + 29}" r="2.5" class="pe-pill-leader-dot" />
       `;
     }
 
@@ -167,10 +192,10 @@ export function renderPatternVisualizer(container, pattern) {
 
         <!-- Main SVG Topology & Animated Message Flow Canvas -->
         <div class="pe-canvas-container">
-          <svg class="pe-topology-svg" viewBox="0 0 740 330" role="img" aria-label="${pattern.name} runtime topology">
+          <svg class="pe-topology-svg" viewBox="0 0 880 350" role="img" aria-label="${pattern.name} runtime topology">
             <defs>
               <marker id="pe-arrow-muted" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                <path d="M 0 1 L 10 5 L 0 9 z" fill="var(--text-muted)" opacity="0.55" />
+                <path d="M 0 1 L 10 5 L 0 9 z" fill="var(--text-muted)" opacity="0.6" />
               </marker>
               <marker id="pe-arrow-active" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
                 <path d="M 0 1 L 10 5 L 0 9 z" fill="var(--accent-primary)" />
@@ -185,38 +210,43 @@ export function renderPatternVisualizer(container, pattern) {
               const isCurrentEdge =
                 (step.packet.from === link.from && step.packet.to === link.to) ||
                 (step.packet.from === link.to && step.packet.to === link.from);
-              const lMidX = (n1.x + n2.x) / 2;
-              const lMidY = (n1.y + n2.y) / 2 - 8;
+
+              const p1 = getBoxBorderPoint(n1, n2, 146, 58, 0);
+              const p2 = getBoxBorderPoint(n2, n1, 146, 58, 6);
+
               return `
                 <g class="pe-edge-group ${isCurrentEdge ? "is-active" : ""}">
                   <line
-                    x1="${n1.x}" y1="${n1.y}"
-                    x2="${n2.x}" y2="${n2.y}"
+                    x1="${p1.x}" y1="${p1.y}"
+                    x2="${p2.x}" y2="${p2.y}"
                     class="pe-edge-line ${link.dashed ? "dashed" : ""} ${isCurrentEdge ? "active" : ""}"
                     marker-end="url(#${isCurrentEdge ? "pe-arrow-active" : "pe-arrow-muted"})"
                   />
-                  <text x="${lMidX}" y="${lMidY}" text-anchor="middle" class="pe-edge-label">${link.label}</text>
                 </g>
               `;
             }).join("")}
 
             <!-- Active Animated Packet Path & Gliding Capsule -->
-            ${!isSelfCall ? `
-              <line
-                x1="${fromNode.x}" y1="${fromNode.y}"
-                x2="${toNode.x}" y2="${toNode.y}"
-                class="pe-active-flight-line"
-                marker-end="url(#pe-arrow-active)"
-              />
-              <circle r="7" class="pe-packet-dot">
-                <animateMotion
-                  dur="${Math.max(0.9, speedMs / 1800)}s"
-                  repeatCount="indefinite"
-                  path="M ${fromNode.x} ${fromNode.y} L ${toNode.x} ${toNode.y}"
+            ${!isSelfCall ? (() => {
+              const fp1 = getBoxBorderPoint(fromNode, toNode, 146, 58, 0);
+              const fp2 = getBoxBorderPoint(toNode, fromNode, 146, 58, 6);
+              return `
+                <line
+                  x1="${fp1.x}" y1="${fp1.y}"
+                  x2="${fp2.x}" y2="${fp2.y}"
+                  class="pe-active-flight-line"
+                  marker-end="url(#pe-arrow-active)"
                 />
-              </circle>
-            ` : `
-              <circle cx="${fromNode.x}" cy="${fromNode.y - 44}" r="18" class="pe-self-loop-path" fill="none" />
+                <circle r="6" class="pe-packet-dot">
+                  <animateMotion
+                    dur="${Math.max(0.9, speedMs / 1800)}s"
+                    repeatCount="indefinite"
+                    path="M ${fp1.x} ${fp1.y} L ${fp2.x} ${fp2.y}"
+                  />
+                </circle>
+              `;
+            })() : `
+              <circle cx="${fromNode.x}" cy="${fromNode.y - 38}" r="16" class="pe-self-loop-path" fill="none" />
             `}
 
             <!-- Participant Nodes -->
@@ -225,8 +255,8 @@ export function renderPatternVisualizer(container, pattern) {
               const isSender = step.packet.from === node.id;
               const isReceiver = step.packet.to === node.id;
               const stateText = (step.nodeStates && step.nodeStates[node.id]) || "IDLE";
-              const w = 156;
-              const h = 68;
+              const w = 146;
+              const h = 58;
               const rx = node.x - w / 2;
               const ry = node.y - h / 2;
               return `
@@ -238,13 +268,49 @@ export function renderPatternVisualizer(container, pattern) {
                   aria-label="${node.label} ${node.stereotype} ${stateText}"
                 >
                   <rect x="${rx}" y="${ry}" width="${w}" height="${h}" rx="8" class="pe-node-box" />
-                  <text x="${node.x}" y="${ry + 16}" text-anchor="middle" class="pe-node-stereotype">${node.stereotype}</text>
-                  <text x="${node.x}" y="${ry + 34}" text-anchor="middle" class="pe-node-title">${node.label}</text>
-                  <text x="${rx + 10}" y="${ry + 55}" class="pe-node-addr">${node.addr}</text>
-                  <text x="${rx + w - 10}" y="${ry + 55}" text-anchor="end" class="pe-node-state-badge">${stateText}</text>
+                  <text x="${node.x}" y="${ry + 15}" text-anchor="middle" class="pe-node-stereotype">${node.stereotype}</text>
+                  <text x="${node.x}" y="${ry + 32}" text-anchor="middle" class="pe-node-title">${node.label}</text>
+                  <text x="${rx + 10}" y="${ry + 49}" class="pe-node-addr">${node.addr}</text>
+                  <text x="${rx + w - 10}" y="${ry + 49}" text-anchor="end" class="pe-node-state-badge">${stateText}</text>
                 </g>
               `;
             }).join("")}
+
+            <!-- Edge Labels Layer (Always on top of nodes with clean halo) -->
+            <g class="pe-edge-labels-layer">
+              ${anim.links.map(link => {
+                const n1 = nodesMap[link.from];
+                const n2 = nodesMap[link.to];
+                if (!n1 || !n2) return "";
+                const isCurrentEdge =
+                  (step.packet.from === link.from && step.packet.to === link.to) ||
+                  (step.packet.from === link.to && step.packet.to === link.from);
+
+                const p1 = getBoxBorderPoint(n1, n2, 146, 58, 0);
+                const p2 = getBoxBorderPoint(n2, n1, 146, 58, 6);
+                let lMidX = (p1.x + p2.x) / 2;
+                let lMidY = (p1.y + p2.y) / 2;
+                const isHorizontal = Math.abs(p1.y - p2.y) < 20;
+                const isVertical = Math.abs(p1.x - p2.x) < 20;
+
+                if (isHorizontal) {
+                  lMidY -= 12;
+                } else if (isVertical) {
+                  lMidX += 8;
+                } else {
+                  lMidY -= 10;
+                }
+
+                return `
+                  <text
+                    x="${lMidX}"
+                    y="${lMidY}"
+                    text-anchor="${isVertical ? "start" : "middle"}"
+                    class="pe-edge-label ${isCurrentEdge ? "active" : ""}"
+                  >${link.label}</text>
+                `;
+              }).join("")}
+            </g>
 
             <!-- Floating Call Packet Pill (Positioned above/below to never obstruct flowchart components) -->
             ${leaderLineSvg}

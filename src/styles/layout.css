@@ -276,6 +276,14 @@ a:hover {
   align-items: stretch;
 }
 
+.main-content-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: calc(100vh - var(--header-height));
+}
+
 /* Left Sidebar (Protocol Explorer Navigation Rail) */
 .sidebar {
   width: var(--sidebar-width);
@@ -400,6 +408,44 @@ a:hover {
   color: var(--text-primary);
 }
 
+.sidebar-group-title .chevron {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.24s cubic-bezier(0.4, 0, 0.2, 1);
+  color: var(--text-muted);
+}
+
+.sidebar-group-title[aria-expanded="true"] .chevron {
+  transform: rotate(90deg);
+  color: var(--text-primary);
+}
+
+/* Accordion Smooth Height Transition */
+.sidebar-items-group {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.26s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.sidebar-items-group.is-open {
+  grid-template-rows: 1fr;
+}
+
+.sidebar-items-inner {
+  min-height: 0;
+  overflow: hidden;
+  transition: opacity 0.22s ease, transform 0.22s ease;
+  opacity: 0;
+  transform: translateY(-4px);
+}
+
+.sidebar-items-group.is-open .sidebar-items-inner {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 .sidebar-item {
   display: flex;
   align-items: center;
@@ -486,6 +532,10 @@ a:hover {
   padding: 0.75rem 0.85rem;
   border-top: 1px solid var(--border-color);
   background-color: var(--bg-surface);
+  margin-top: auto;
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
 }
 
 .sidebar-profile-link {
@@ -617,44 +667,56 @@ a:hover {
 .app-footer {
   background-color: var(--bg-surface);
   border-top: 1px solid var(--border-color);
-  padding: 1.75rem 1.5rem;
+  padding: 2rem 1.5rem;
   font-size: 0.84rem;
   color: var(--text-muted);
+  width: 100%;
 }
 
 .footer-content {
   max-width: var(--content-max-width);
   margin: 0 auto;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 1rem;
+  justify-content: center;
+  text-align: center;
+  gap: 0.9rem;
 }
 
 .footer-brand-row {
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
+  align-items: center;
+  text-align: center;
+  gap: 0.35rem;
 }
 
 .footer-brand-row strong {
   font-family: var(--font-mono);
   font-size: 0.78rem;
   color: var(--text-primary);
+  text-align: center;
+}
+
+.footer-brand-row span {
+  text-align: center;
 }
 
 .footer-links {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 1rem;
+  justify-content: center;
+  gap: 1.25rem;
+  text-align: center;
 }
 
 .footer-links a {
   color: var(--text-secondary);
   text-decoration: none;
   font-weight: 500;
+  transition: color var(--transition-speed);
 }
 
 .footer-links a:hover {

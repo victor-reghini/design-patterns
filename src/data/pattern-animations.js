@@ -108,7 +108,7 @@ export function buildObjectInspectorState(patternCode, step, nodesMap, selectedN
     attributes.highLevelApi = step.packet.call;
   } else if (code === "FL") {
     attributes.intrinsicState = "GlyphMetrics + FontFace ('Inter-Bold')";
-    attributes.extrinsicContext = "{ x: 12, y: 40, color: '#38bdf8' }";
+    attributes.extrinsicContext = "{ x: 380, y: 75, color: '#38bdf8' }";
     attributes.sharedInstance = "0x4300";
   } else if (code === "PX") {
     attributes.proxyType = "Virtual Lazy + Auth Guard";
@@ -266,11 +266,11 @@ export const patternAnimations = {
     layerIndex: 1,
     scopeType: "OBJECT",
     nodes: [
-      { id: "client", label: "ApplicationClient", stereotype: "«client»", addr: "0x10A0", x: 110, y: 155, color: "blue" },
-      { id: "abFactory", label: "GUIFactory", stereotype: "«interface»", addr: "0x20B0", x: 320, y: 75, color: "emerald" },
-      { id: "macFactory", label: "MacFactory", stereotype: "«concrete»", addr: "0x20C4", x: 320, y: 235, color: "emerald" },
-      { id: "button", label: "MacButton", stereotype: "«product A»", addr: "0x40D8", x: 600, y: 90, color: "cyan" },
-      { id: "checkbox", label: "MacCheckbox", stereotype: "«product B»", addr: "0x40F2", x: 600, y: 225, color: "cyan" }
+      { id: "client", label: "ApplicationClient", stereotype: "«client»", addr: "0x10A0", x: 110, y: 165, color: "blue" },
+      { id: "abFactory", label: "GUIFactory", stereotype: "«interface»", addr: "0x20B0", x: 410, y: 75, color: "emerald" },
+      { id: "macFactory", label: "MacFactory", stereotype: "«concrete»", addr: "0x20C4", x: 410, y: 255, color: "emerald" },
+      { id: "button", label: "MacButton", stereotype: "«product A»", addr: "0x40D8", x: 740, y: 75, color: "cyan" },
+      { id: "checkbox", label: "MacCheckbox", stereotype: "«product B»", addr: "0x40F2", x: 740, y: 255, color: "cyan" }
     ],
     links: [
       { from: "client", to: "abFactory", label: "uses contract" },
@@ -372,10 +372,10 @@ export const patternAnimations = {
     layerIndex: 1,
     scopeType: "OBJECT",
     nodes: [
-      { id: "client", label: "Director / Client", stereotype: "«director»", addr: "0x1100", x: 110, y: 155, color: "blue" },
-      { id: "builderIf", label: "QueryBuilder", stereotype: "«interface»", addr: "0x2100", x: 330, y: 75, color: "emerald" },
-      { id: "pgBuilder", label: "PostgresSQLBuilder", stereotype: "«concrete»", addr: "0x2180", x: 330, y: 235, color: "emerald" },
-      { id: "product", label: "SQLQueryProduct", stereotype: "«complex obj»", addr: "0x5200", x: 600, y: 155, color: "cyan" }
+      { id: "client", label: "Director / Client", stereotype: "«director»", addr: "0x1100", x: 110, y: 165, color: "blue" },
+      { id: "builderIf", label: "QueryBuilder", stereotype: "«interface»", addr: "0x2100", x: 420, y: 75, color: "emerald" },
+      { id: "pgBuilder", label: "PostgresSQLBuilder", stereotype: "«concrete»", addr: "0x2180", x: 420, y: 255, color: "emerald" },
+      { id: "product", label: "SQLQueryProduct", stereotype: "«complex obj»", addr: "0x5200", x: 740, y: 165, color: "cyan" }
     ],
     links: [
       { from: "client", to: "builderIf", label: "orchestrates steps" },
@@ -436,10 +436,10 @@ export const patternAnimations = {
     layerIndex: 1,
     scopeType: "CLASS",
     nodes: [
-      { id: "creator", label: "LogisticsCreator", stereotype: "«abstract class»", addr: "0x1200", x: 130, y: 95, color: "emerald" },
-      { id: "subCreator", label: "SeaLogistics", stereotype: "«subclass»", addr: "0x1280", x: 130, y: 230, color: "emerald" },
-      { id: "productIf", label: "Transport", stereotype: "«interface»", addr: "0x3100", x: 520, y: 95, color: "cyan" },
-      { id: "ship", label: "CargoShip", stereotype: "«concrete»", addr: "0x3190", x: 520, y: 230, color: "cyan" }
+      { id: "creator", label: "LogisticsCreator", stereotype: "«abstract class»", addr: "0x1200", x: 170, y: 75, color: "emerald" },
+      { id: "subCreator", label: "SeaLogistics", stereotype: "«subclass»", addr: "0x1280", x: 170, y: 255, color: "emerald" },
+      { id: "productIf", label: "Transport", stereotype: "«interface»", addr: "0x3100", x: 670, y: 75, color: "cyan" },
+      { id: "ship", label: "CargoShip", stereotype: "«concrete»", addr: "0x3190", x: 670, y: 255, color: "cyan" }
     ],
     links: [
       { from: "creator", to: "subCreator", label: "overrides createTransport()", dashed: true },
@@ -501,10 +501,10 @@ export const patternAnimations = {
     layerIndex: 1,
     scopeType: "OBJECT",
     nodes: [
-      { id: "client", label: "EditorClient", stereotype: "«client»", addr: "0x1300", x: 110, y: 155, color: "blue" },
-      { id: "registry", label: "PrototypeRegistry", stereotype: "«registry»", addr: "0x2300", x: 325, y: 80, color: "emerald" },
-      { id: "master", label: "MasterCellProto", stereotype: "«prototype»", addr: "0x4100", x: 325, y: 235, color: "violet" },
-      { id: "cloneObj", label: "ClonedCellInstance", stereotype: "«deep copy»", addr: "0x68A0", x: 595, y: 155, color: "cyan" }
+      { id: "client", label: "EditorClient", stereotype: "«client»", addr: "0x1300", x: 110, y: 165, color: "blue" },
+      { id: "registry", label: "PrototypeRegistry", stereotype: "«registry»", addr: "0x2300", x: 420, y: 75, color: "emerald" },
+      { id: "master", label: "MasterCellProto", stereotype: "«prototype»", addr: "0x4100", x: 420, y: 255, color: "violet" },
+      { id: "cloneObj", label: "ClonedCellInstance", stereotype: "«deep copy»", addr: "0x68A0", x: 740, y: 165, color: "cyan" }
     ],
     links: [
       { from: "client", to: "registry", label: "get('enemy-elite')" },
@@ -566,10 +566,10 @@ export const patternAnimations = {
     layerIndex: 1,
     scopeType: "OBJECT",
     nodes: [
-      { id: "clientA", label: "WorkerThread A", stereotype: "«caller 1»", addr: "0x1400", x: 115, y: 85, color: "blue" },
-      { id: "clientB", label: "WorkerThread B", stereotype: "«caller 2»", addr: "0x1450", x: 115, y: 230, color: "blue" },
-      { id: "guard", label: "Singleton::getInstance()", stereotype: "«static guard»", addr: "0x2400", x: 370, y: 155, color: "emerald" },
-      { id: "instance", label: "DatabasePool", stereotype: "«sole instance»", addr: "0x7777", x: 615, y: 155, color: "amber" }
+      { id: "clientA", label: "WorkerThread A", stereotype: "«caller 1»", addr: "0x1400", x: 130, y: 80, color: "blue" },
+      { id: "clientB", label: "WorkerThread B", stereotype: "«caller 2»", addr: "0x1450", x: 130, y: 250, color: "blue" },
+      { id: "guard", label: "Singleton::getInstance()", stereotype: "«static guard»", addr: "0x2400", x: 440, y: 165, color: "emerald" },
+      { id: "instance", label: "DatabasePool", stereotype: "«sole instance»", addr: "0x7777", x: 750, y: 165, color: "amber" }
     ],
     links: [
       { from: "clientA", to: "guard", label: "getInstance()" },
@@ -630,10 +630,10 @@ export const patternAnimations = {
     layerIndex: 2,
     scopeType: "OBJECT",
     nodes: [
-      { id: "client", label: "CheckoutService", stereotype: "«client»", addr: "0x1500", x: 105, y: 155, color: "blue" },
-      { id: "target", label: "PaymentProcessor", stereotype: "«target if»", addr: "0x2500", x: 295, y: 80, color: "cyan" },
-      { id: "adapter", label: "SoapToRestAdapter", stereotype: "«adapter»", addr: "0x3500", x: 375, y: 230, color: "emerald" },
-      { id: "adaptee", label: "LegacySoapBank", stereotype: "«adaptee»", addr: "0x8900", x: 615, y: 155, color: "amber" }
+      { id: "client", label: "CheckoutService", stereotype: "«client»", addr: "0x1500", x: 110, y: 165, color: "blue" },
+      { id: "target", label: "PaymentProcessor", stereotype: "«target if»", addr: "0x2500", x: 380, y: 75, color: "cyan" },
+      { id: "adapter", label: "SoapToRestAdapter", stereotype: "«adapter»", addr: "0x3500", x: 470, y: 255, color: "emerald" },
+      { id: "adaptee", label: "LegacySoapBank", stereotype: "«adaptee»", addr: "0x8900", x: 750, y: 165, color: "amber" }
     ],
     links: [
       { from: "client", to: "target", label: "payJson(amount)" },
@@ -694,10 +694,10 @@ export const patternAnimations = {
     layerIndex: 2,
     scopeType: "OBJECT",
     nodes: [
-      { id: "abstraction", label: "RemoteControl", stereotype: "«abstraction»", addr: "0x1600", x: 130, y: 90, color: "blue" },
-      { id: "refined", label: "AdvancedRemote", stereotype: "«refined»", addr: "0x1680", x: 130, y: 225, color: "blue" },
-      { id: "implIf", label: "DeviceImpl", stereotype: "«implementor»", addr: "0x3600", x: 470, y: 90, color: "cyan" },
-      { id: "concreteImpl", label: "SmartTVDevice", stereotype: "«concrete impl»", addr: "0x3690", x: 580, y: 225, color: "emerald" }
+      { id: "abstraction", label: "RemoteControl", stereotype: "«abstraction»", addr: "0x1600", x: 170, y: 75, color: "blue" },
+      { id: "refined", label: "AdvancedRemote", stereotype: "«refined»", addr: "0x1680", x: 170, y: 255, color: "blue" },
+      { id: "implIf", label: "DeviceImpl", stereotype: "«implementor»", addr: "0x3600", x: 620, y: 75, color: "cyan" },
+      { id: "concreteImpl", label: "SmartTVDevice", stereotype: "«concrete impl»", addr: "0x3690", x: 740, y: 255, color: "emerald" }
     ],
     links: [
       { from: "refined", to: "abstraction", label: "extends", dashed: true },
@@ -758,10 +758,10 @@ export const patternAnimations = {
     layerIndex: 2,
     scopeType: "OBJECT",
     nodes: [
-      { id: "client", label: "StorageAnalyzer", stereotype: "«client»", addr: "0x1700", x: 95, y: 155, color: "blue" },
-      { id: "rootDir", label: "Folder('/src')", stereotype: "«composite»", addr: "0x2700", x: 310, y: 155, color: "cyan" },
-      { id: "leafA", label: "File('main.ts')", stereotype: "«leaf 12KB»", addr: "0x4710", x: 565, y: 70, color: "emerald" },
-      { id: "subDir", label: "Folder('/core')", stereotype: "«composite»", addr: "0x2790", x: 565, y: 235, color: "cyan" }
+      { id: "client", label: "StorageAnalyzer", stereotype: "«client»", addr: "0x1700", x: 100, y: 165, color: "blue" },
+      { id: "rootDir", label: "Folder('/src')", stereotype: "«composite»", addr: "0x2700", x: 390, y: 165, color: "cyan" },
+      { id: "leafA", label: "File('main.ts')", stereotype: "«leaf 12KB»", addr: "0x4710", x: 720, y: 75, color: "emerald" },
+      { id: "subDir", label: "Folder('/core')", stereotype: "«composite»", addr: "0x2790", x: 720, y: 255, color: "cyan" }
     ],
     links: [
       { from: "client", to: "rootDir", label: "getSize() uniform" },
@@ -822,10 +822,10 @@ export const patternAnimations = {
     layerIndex: 2,
     scopeType: "OBJECT",
     nodes: [
-      { id: "client", label: "BackupService", stereotype: "«client»", addr: "0x1800", x: 95, y: 155, color: "blue" },
-      { id: "encDec", label: "AESEncryptDecorator", stereotype: "«decorator 2»", addr: "0x2810", x: 280, y: 155, color: "violet" },
-      { id: "zipDec", label: "GzipCompressDecorator", stereotype: "«decorator 1»", addr: "0x2850", x: 465, y: 155, color: "cyan" },
-      { id: "core", label: "FileDataSource", stereotype: "«core component»", addr: "0x5800", x: 645, y: 155, color: "emerald" }
+      { id: "client", label: "BackupService", stereotype: "«client»", addr: "0x1800", x: 95, y: 165, color: "blue" },
+      { id: "encDec", label: "AESEncryptDecorator", stereotype: "«decorator 2»", addr: "0x2810", x: 325, y: 165, color: "violet" },
+      { id: "zipDec", label: "GzipCompressDecorator", stereotype: "«decorator 1»", addr: "0x2850", x: 555, y: 165, color: "cyan" },
+      { id: "core", label: "FileDataSource", stereotype: "«core component»", addr: "0x5800", x: 785, y: 165, color: "emerald" }
     ],
     links: [
       { from: "client", to: "encDec", label: "write(raw)" },
@@ -886,11 +886,11 @@ export const patternAnimations = {
     layerIndex: 2,
     scopeType: "OBJECT",
     nodes: [
-      { id: "client", label: "MobileAppClient", stereotype: "«client»", addr: "0x1900", x: 100, y: 155, color: "blue" },
-      { id: "facade", label: "VideoConverterFacade", stereotype: "«facade»", addr: "0x2900", x: 325, y: 155, color: "cyan" },
-      { id: "codec", label: "H264CodecEngine", stereotype: "«subsystem A»", addr: "0x4910", x: 585, y: 65, color: "emerald" },
-      { id: "audio", label: "AudioMixerDSP", stereotype: "«subsystem B»", addr: "0x4950", x: 585, y: 155, color: "emerald" },
-      { id: "muxer", label: "MP4BitrateMuxer", stereotype: "«subsystem C»", addr: "0x4990", x: 585, y: 245, color: "emerald" }
+      { id: "client", label: "MobileAppClient", stereotype: "«client»", addr: "0x1900", x: 105, y: 175, color: "blue" },
+      { id: "facade", label: "VideoConverterFacade", stereotype: "«facade»", addr: "0x2900", x: 400, y: 175, color: "cyan" },
+      { id: "codec", label: "H264CodecEngine", stereotype: "«subsystem A»", addr: "0x4910", x: 730, y: 55, color: "emerald" },
+      { id: "audio", label: "AudioMixerDSP", stereotype: "«subsystem B»", addr: "0x4950", x: 730, y: 175, color: "emerald" },
+      { id: "muxer", label: "MP4BitrateMuxer", stereotype: "«subsystem C»", addr: "0x4990", x: 730, y: 295, color: "emerald" }
     ],
     links: [
       { from: "client", to: "facade", label: "convert('clip.mov','mp4')" },
@@ -952,10 +952,10 @@ export const patternAnimations = {
     layerIndex: 2,
     scopeType: "OBJECT",
     nodes: [
-      { id: "doc", label: "LexiDocumentRow", stereotype: "«client context»", addr: "0x1A00", x: 110, y: 155, color: "blue" },
-      { id: "factory", label: "GlyphFlyweightPool", stereotype: "«flyweight factory»", addr: "0x2A00", x: 350, y: 80, color: "cyan" },
-      { id: "charA", label: "CharGlyph('a')", stereotype: "«intrinsic 0x9001»", addr: "0x9001", x: 590, y: 95, color: "emerald" },
-      { id: "screen", label: "WindowCanvas", stereotype: "«extrinsic target»", addr: "0x7A00", x: 590, y: 235, color: "amber" }
+      { id: "doc", label: "LexiDocumentRow", stereotype: "«client context»", addr: "0x1A00", x: 110, y: 165, color: "blue" },
+      { id: "factory", label: "GlyphFlyweightPool", stereotype: "«flyweight factory»", addr: "0x2A00", x: 430, y: 80, color: "cyan" },
+      { id: "charA", label: "CharGlyph('a')", stereotype: "«intrinsic 0x9001»", addr: "0x9001", x: 740, y: 80, color: "emerald" },
+      { id: "screen", label: "WindowCanvas", stereotype: "«extrinsic target»", addr: "0x7A00", x: 740, y: 255, color: "amber" }
     ],
     links: [
       { from: "doc", to: "factory", label: "getGlyph('a')" },
@@ -1017,10 +1017,10 @@ export const patternAnimations = {
     layerIndex: 2,
     scopeType: "OBJECT",
     nodes: [
-      { id: "client", label: "DashboardView", stereotype: "«client»", addr: "0x1B00", x: 105, y: 155, color: "blue" },
-      { id: "subjectIf", label: "ReportService", stereotype: "«subject if»", addr: "0x2B00", x: 300, y: 75, color: "cyan" },
-      { id: "proxy", label: "CachingSecurityProxy", stereotype: "«proxy»", addr: "0x3B00", x: 345, y: 230, color: "violet" },
-      { id: "real", label: "HeavyBigQueryService", stereotype: "«real subject»", addr: "0x8B00", x: 605, y: 155, color: "emerald" }
+      { id: "client", label: "DashboardView", stereotype: "«client»", addr: "0x1B00", x: 110, y: 165, color: "blue" },
+      { id: "subjectIf", label: "ReportService", stereotype: "«subject if»", addr: "0x2B00", x: 390, y: 75, color: "cyan" },
+      { id: "proxy", label: "CachingSecurityProxy", stereotype: "«proxy»", addr: "0x3B00", x: 440, y: 255, color: "violet" },
+      { id: "real", label: "HeavyBigQueryService", stereotype: "«real subject»", addr: "0x8B00", x: 745, y: 165, color: "emerald" }
     ],
     links: [
       { from: "client", to: "subjectIf", label: "getAnnualReport()" },
@@ -1081,10 +1081,10 @@ export const patternAnimations = {
     layerIndex: 3,
     scopeType: "OBJECT",
     nodes: [
-      { id: "client", label: "APIGatewayClient", stereotype: "«sender»", addr: "0x1C00", x: 90, y: 155, color: "blue" },
-      { id: "h1", label: "RateLimitHandler", stereotype: "«handler 1»", addr: "0x2C10", x: 265, y: 155, color: "violet" },
-      { id: "h2", label: "JWTAuthHandler", stereotype: "«handler 2»", addr: "0x2C50", x: 445, y: 155, color: "violet" },
-      { id: "h3", label: "OrderController", stereotype: "«final handler»", addr: "0x2C90", x: 635, y: 155, color: "emerald" }
+      { id: "client", label: "APIGatewayClient", stereotype: "«sender»", addr: "0x1C00", x: 95, y: 165, color: "blue" },
+      { id: "h1", label: "RateLimitHandler", stereotype: "«handler 1»", addr: "0x2C10", x: 325, y: 165, color: "violet" },
+      { id: "h2", label: "JWTAuthHandler", stereotype: "«handler 2»", addr: "0x2C50", x: 555, y: 165, color: "violet" },
+      { id: "h3", label: "OrderController", stereotype: "«final handler»", addr: "0x2C90", x: 785, y: 165, color: "emerald" }
     ],
     links: [
       { from: "client", to: "h1", label: "handle(req)" },
@@ -1145,10 +1145,10 @@ export const patternAnimations = {
     layerIndex: 3,
     scopeType: "OBJECT",
     nodes: [
-      { id: "invoker", label: "ToolbarInvoker", stereotype: "«invoker + stack»", addr: "0x1D00", x: 110, y: 155, color: "blue" },
-      { id: "cmd", label: "InsertTextCommand", stereotype: "«command obj»", addr: "0x3D40", x: 355, y: 80, color: "violet" },
-      { id: "history", label: "UndoHistoryStack", stereotype: "«LIFO stack»", addr: "0x3D90", x: 355, y: 235, color: "amber" },
-      { id: "receiver", label: "DocumentBuffer", stereotype: "«receiver»", addr: "0x6D00", x: 605, y: 155, color: "emerald" }
+      { id: "invoker", label: "ToolbarInvoker", stereotype: "«invoker + stack»", addr: "0x1D00", x: 110, y: 165, color: "blue" },
+      { id: "cmd", label: "InsertTextCommand", stereotype: "«command obj»", addr: "0x3D40", x: 430, y: 75, color: "violet" },
+      { id: "history", label: "UndoHistoryStack", stereotype: "«LIFO stack»", addr: "0x3D90", x: 430, y: 255, color: "amber" },
+      { id: "receiver", label: "DocumentBuffer", stereotype: "«receiver»", addr: "0x6D00", x: 745, y: 165, color: "emerald" }
     ],
     links: [
       { from: "invoker", to: "cmd", label: "execute() / undo()" },
@@ -1209,10 +1209,10 @@ export const patternAnimations = {
     layerIndex: 3,
     scopeType: "CLASS",
     nodes: [
-      { id: "context", label: "VariableContext", stereotype: "«context {x:true,y:false}»", addr: "0x1E00", x: 115, y: 155, color: "blue" },
-      { id: "andExpr", label: "AndExpr(left, right)", stereotype: "«non-terminal»", addr: "0x2E00", x: 355, y: 155, color: "violet" },
-      { id: "termX", label: "VarExpr('x')", stereotype: "«terminal»", addr: "0x4E10", x: 595, y: 80, color: "emerald" },
-      { id: "notY", label: "NotExpr(Var('y'))", stereotype: "«non-terminal»", addr: "0x4E50", x: 595, y: 235, color: "cyan" }
+      { id: "context", label: "VariableContext", stereotype: "«context {x:true,y:false}»", addr: "0x1E00", x: 120, y: 165, color: "blue" },
+      { id: "andExpr", label: "AndExpr(left, right)", stereotype: "«non-terminal»", addr: "0x2E00", x: 435, y: 165, color: "violet" },
+      { id: "termX", label: "VarExpr('x')", stereotype: "«terminal»", addr: "0x4E10", x: 740, y: 75, color: "emerald" },
+      { id: "notY", label: "NotExpr(Var('y'))", stereotype: "«non-terminal»", addr: "0x4E50", x: 740, y: 255, color: "cyan" }
     ],
     links: [
       { from: "context", to: "andExpr", label: "interpret(ctx)" },
@@ -1273,10 +1273,10 @@ export const patternAnimations = {
     layerIndex: 3,
     scopeType: "OBJECT",
     nodes: [
-      { id: "client", label: "FeedRenderer", stereotype: "«client»", addr: "0x1F00", x: 105, y: 155, color: "blue" },
-      { id: "iter", label: "TreeBFSIterator", stereotype: "«iterator cursor»", addr: "0x3F00", x: 355, y: 80, color: "violet" },
-      { id: "aggregate", label: "SocialGraphCollection", stereotype: "«aggregate»", addr: "0x5F00", x: 355, y: 235, color: "emerald" },
-      { id: "elem", label: "NodeItem[idx]", stereotype: "«element»", addr: "0x7F20", x: 605, y: 155, color: "cyan" }
+      { id: "client", label: "FeedRenderer", stereotype: "«client»", addr: "0x1F00", x: 110, y: 165, color: "blue" },
+      { id: "iter", label: "TreeBFSIterator", stereotype: "«iterator cursor»", addr: "0x3F00", x: 435, y: 75, color: "violet" },
+      { id: "aggregate", label: "SocialGraphCollection", stereotype: "«aggregate»", addr: "0x5F00", x: 435, y: 255, color: "emerald" },
+      { id: "elem", label: "NodeItem[idx]", stereotype: "«element»", addr: "0x7F20", x: 745, y: 165, color: "cyan" }
     ],
     links: [
       { from: "client", to: "aggregate", label: "createIterator()" },
@@ -1338,10 +1338,10 @@ export const patternAnimations = {
     layerIndex: 3,
     scopeType: "OBJECT",
     nodes: [
-      { id: "colA", label: "Flight747 (Colleague A)", stereotype: "«colleague»", addr: "0x1010", x: 105, y: 80, color: "blue" },
-      { id: "colB", label: "Airbus320 (Colleague B)", stereotype: "«colleague»", addr: "0x1020", x: 105, y: 235, color: "blue" },
-      { id: "mediator", label: "ControlTowerMediator", stereotype: "«mediator hub»", addr: "0x5000", x: 375, y: 155, color: "violet" },
-      { id: "colC", label: "RunwayLightingSystem", stereotype: "«colleague C»", addr: "0x1030", x: 615, y: 155, color: "emerald" }
+      { id: "colA", label: "Flight747 (Colleague A)", stereotype: "«colleague»", addr: "0x1010", x: 120, y: 80, color: "blue" },
+      { id: "colB", label: "Airbus320 (Colleague B)", stereotype: "«colleague»", addr: "0x1020", x: 120, y: 250, color: "blue" },
+      { id: "mediator", label: "ControlTowerMediator", stereotype: "«mediator hub»", addr: "0x5000", x: 450, y: 165, color: "violet" },
+      { id: "colC", label: "RunwayLightingSystem", stereotype: "«colleague C»", addr: "0x1030", x: 750, y: 165, color: "emerald" }
     ],
     links: [
       { from: "colA", to: "mediator", label: "notify('REQUEST_LAND')" },
@@ -1402,9 +1402,9 @@ export const patternAnimations = {
     layerIndex: 3,
     scopeType: "OBJECT",
     nodes: [
-      { id: "originator", label: "CanvasEditor (Originator)", stereotype: "«originator»", addr: "0x11A0", x: 135, y: 155, color: "emerald" },
-      { id: "memento", label: "EditorMementoToken", stereotype: "«opaque snapshot»", addr: "0x44B0", x: 380, y: 75, color: "violet" },
-      { id: "caretaker", label: "HistoryCaretaker", stereotype: "«caretaker»", addr: "0x66C0", x: 600, y: 155, color: "blue" }
+      { id: "originator", label: "CanvasEditor (Originator)", stereotype: "«originator»", addr: "0x11A0", x: 130, y: 165, color: "emerald" },
+      { id: "memento", label: "EditorMementoToken", stereotype: "«opaque snapshot»", addr: "0x44B0", x: 450, y: 75, color: "violet" },
+      { id: "caretaker", label: "HistoryCaretaker", stereotype: "«caretaker»", addr: "0x66C0", x: 745, y: 165, color: "blue" }
     ],
     links: [
       { from: "originator", to: "memento", label: "save() creates snapshot" },
@@ -1465,11 +1465,11 @@ export const patternAnimations = {
     layerIndex: 3,
     scopeType: "OBJECT",
     nodes: [
-      { id: "subject", label: "StockTickerSubject", stereotype: "«concrete subject»", addr: "0x1000", x: 120, y: 155, color: "emerald" },
-      { id: "obsIf", label: "Observer::update()", stereotype: "«interface»", addr: "0x2000", x: 345, y: 155, color: "violet" },
-      { id: "chart", label: "CandlestickChart", stereotype: "«observer A»", addr: "0x5010", x: 595, y: 65, color: "cyan" },
-      { id: "alert", label: "PriceAlertBot", stereotype: "«observer B»", addr: "0x5020", x: 595, y: 155, color: "cyan" },
-      { id: "audit", label: "TickerTapeLogger", stereotype: "«observer C»", addr: "0x5030", x: 595, y: 245, color: "cyan" }
+      { id: "subject", label: "StockTickerSubject", stereotype: "«concrete subject»", addr: "0x1000", x: 120, y: 175, color: "emerald" },
+      { id: "obsIf", label: "Observer::update()", stereotype: "«interface»", addr: "0x2000", x: 420, y: 175, color: "violet" },
+      { id: "chart", label: "CandlestickChart", stereotype: "«observer A»", addr: "0x5010", x: 730, y: 55, color: "cyan" },
+      { id: "alert", label: "PriceAlertBot", stereotype: "«observer B»", addr: "0x5020", x: 730, y: 175, color: "cyan" },
+      { id: "audit", label: "TickerTapeLogger", stereotype: "«observer C»", addr: "0x5030", x: 730, y: 295, color: "cyan" }
     ],
     links: [
       { from: "subject", to: "obsIf", label: "notify() loop" },
@@ -1531,10 +1531,10 @@ export const patternAnimations = {
     layerIndex: 3,
     scopeType: "OBJECT",
     nodes: [
-      { id: "context", label: "TCPConnection (Context)", stereotype: "«context»", addr: "0x1880", x: 115, y: 155, color: "blue" },
-      { id: "closed", label: "TCPClosedState", stereotype: "«state 1»", addr: "0x3810", x: 375, y: 65, color: "amber" },
-      { id: "listen", label: "TCPListenState", stereotype: "«state 2»", addr: "0x3820", x: 375, y: 245, color: "violet" },
-      { id: "estab", label: "TCPEstablishedState", stereotype: "«state 3»", addr: "0x3830", x: 610, y: 155, color: "emerald" }
+      { id: "context", label: "TCPConnection (Context)", stereotype: "«context»", addr: "0x1880", x: 120, y: 165, color: "blue" },
+      { id: "closed", label: "TCPClosedState", stereotype: "«state 1»", addr: "0x3810", x: 450, y: 75, color: "amber" },
+      { id: "listen", label: "TCPListenState", stereotype: "«state 2»", addr: "0x3820", x: 450, y: 255, color: "violet" },
+      { id: "estab", label: "TCPEstablishedState", stereotype: "«state 3»", addr: "0x3830", x: 750, y: 165, color: "emerald" }
     ],
     links: [
       { from: "context", to: "closed", label: "delegates open()" },
@@ -1596,10 +1596,10 @@ export const patternAnimations = {
     layerIndex: 3,
     scopeType: "OBJECT",
     nodes: [
-      { id: "context", label: "OrderCheckout (Context)", stereotype: "«context»", addr: "0x1990", x: 115, y: 155, color: "blue" },
-      { id: "stratIf", label: "ShippingStrategy", stereotype: "«interface»", addr: "0x2990", x: 350, y: 155, color: "violet" },
-      { id: "sedex", label: "ExpressAirStrategy", stereotype: "«strategy A»", addr: "0x6010", x: 595, y: 75, color: "emerald" },
-      { id: "drone", label: "PrimeDroneStrategy", stereotype: "«strategy B»", addr: "0x6050", x: 595, y: 235, color: "cyan" }
+      { id: "context", label: "OrderCheckout (Context)", stereotype: "«context»", addr: "0x1990", x: 120, y: 165, color: "blue" },
+      { id: "stratIf", label: "ShippingStrategy", stereotype: "«interface»", addr: "0x2990", x: 435, y: 165, color: "violet" },
+      { id: "sedex", label: "ExpressAirStrategy", stereotype: "«strategy A»", addr: "0x6010", x: 740, y: 75, color: "emerald" },
+      { id: "drone", label: "PrimeDroneStrategy", stereotype: "«strategy B»", addr: "0x6050", x: 740, y: 255, color: "cyan" }
     ],
     links: [
       { from: "context", to: "stratIf", label: "strategy.calculate(order)" },
@@ -1660,10 +1660,10 @@ export const patternAnimations = {
     layerIndex: 3,
     scopeType: "CLASS",
     nodes: [
-      { id: "base", label: "DataMinerTemplate", stereotype: "«abstract class»", addr: "0x1A10", x: 140, y: 155, color: "violet" },
-      { id: "stepOpen", label: "1. openFile() [Fixed]", stereotype: "«invariant step»", addr: "0x1A20", x: 430, y: 60, color: "blue" },
-      { id: "stepParse", label: "2. extractData() [Abstract]", stereotype: "«subclass override»", addr: "0x5A40", x: 580, y: 155, color: "emerald" },
-      { id: "stepReport", label: "3. sendReport() [Fixed]", stereotype: "«invariant step»", addr: "0x1A60", x: 430, y: 250, color: "blue" }
+      { id: "base", label: "DataMinerTemplate", stereotype: "«abstract class»", addr: "0x1A10", x: 140, y: 175, color: "violet" },
+      { id: "stepOpen", label: "1. openFile() [Fixed]", stereotype: "«invariant step»", addr: "0x1A20", x: 660, y: 55, color: "blue" },
+      { id: "stepParse", label: "2. extractData() [Abstract]", stereotype: "«subclass override»", addr: "0x5A40", x: 730, y: 175, color: "emerald" },
+      { id: "stepReport", label: "3. sendReport() [Fixed]", stereotype: "«invariant step»", addr: "0x1A60", x: 660, y: 295, color: "blue" }
     ],
     links: [
       { from: "base", to: "stepOpen", label: "step 1 (base)" },
@@ -1724,10 +1724,10 @@ export const patternAnimations = {
     layerIndex: 3,
     scopeType: "OBJECT",
     nodes: [
-      { id: "client", label: "CompilerDriver", stereotype: "«client»", addr: "0x1B10", x: 95, y: 155, color: "blue" },
-      { id: "elemA", label: "AssignmentNode", stereotype: "«element A»", addr: "0x3B10", x: 335, y: 80, color: "emerald" },
-      { id: "elemB", label: "BinaryOpNode", stereotype: "«element B»", addr: "0x3B50", x: 335, y: 235, color: "emerald" },
-      { id: "visitor", label: "TypeCheckVisitor", stereotype: "«visitor»", addr: "0x7B00", x: 600, y: 155, color: "violet" }
+      { id: "client", label: "CompilerDriver", stereotype: "«client»", addr: "0x1B10", x: 105, y: 165, color: "blue" },
+      { id: "elemA", label: "AssignmentNode", stereotype: "«element A»", addr: "0x3B10", x: 420, y: 75, color: "emerald" },
+      { id: "elemB", label: "BinaryOpNode", stereotype: "«element B»", addr: "0x3B50", x: 420, y: 255, color: "emerald" },
+      { id: "visitor", label: "TypeCheckVisitor", stereotype: "«visitor»", addr: "0x7B00", x: 740, y: 165, color: "violet" }
     ],
     links: [
       { from: "client", to: "elemA", label: "accept(visitor)" },

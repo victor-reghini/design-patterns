@@ -577,9 +577,9 @@ h1.page-title {
 
 .pe-topology-svg {
   width: 100%;
-  min-width: 620px;
+  min-width: 680px;
   height: auto;
-  max-height: 350px;
+  max-height: 380px;
   display: block;
   margin: 0 auto;
 }
@@ -602,8 +602,20 @@ h1.page-title {
 
 .pe-edge-label {
   font-family: var(--font-mono);
-  font-size: 9.5px;
-  fill: var(--text-muted);
+  font-size: 10.5px;
+  font-weight: 600;
+  fill: var(--text-secondary);
+  paint-order: stroke fill;
+  stroke: var(--bg-canvas);
+  stroke-width: 6px;
+  stroke-linejoin: round;
+  letter-spacing: 0.02em;
+  pointer-events: none;
+}
+
+.pe-edge-label.active {
+  fill: var(--accent-primary);
+  font-weight: 700;
 }
 
 .pe-active-flight-line {

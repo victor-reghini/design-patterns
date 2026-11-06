@@ -41,6 +41,19 @@ export function renderSidebar(sidebarEl, currentHash = "") {
   const structural = patternsData.filter(p => p.category === "estrutural");
   const behavioral = patternsData.filter(p => p.category === "comportamental");
 
+  let activeGroup = "criacional";
+  if (currentHash.startsWith("#/padrao/")) {
+    const pid = currentHash.replace("#/padrao/", "").trim();
+    const p = patternsData.find(item => item.id === pid);
+    if (p) activeGroup = p.category;
+  } else if (["#/", "", "#/livro", "#/principios", "#/remodelacao", "#/lexi", "#/matriz", "#/relacionamentos"].includes(currentHash)) {
+    activeGroup = "geral";
+  } else if (["#/laboratorios", "#/quizzes", "#/referencias"].includes(currentHash)) {
+    activeGroup = "pratica";
+  }
+
+  const isGroupOpen = (grp) => grp === activeGroup;
+
   sidebarEl.innerHTML = `
     <div class="sidebar-search-box">
       <div class="search-input-wrapper">
@@ -72,110 +85,120 @@ export function renderSidebar(sidebarEl, currentHash = "") {
     <nav class="sidebar-nav" id="sidebar-nav-container" aria-label="GoF Design Patterns Navigation">
       <!-- Creational (5) -->
       <div class="sidebar-group">
-        <button type="button" class="sidebar-group-title" data-group="criacional" aria-expanded="true">
+        <button type="button" class="sidebar-group-title" data-group="criacional" aria-expanded="${isGroupOpen("criacional")}">
           <span>${t("groupCreational")}</span>
-          <span class="chevron">${icons.chevronDown}</span>
+          <span class="chevron">${icons.chevronRight}</span>
         </button>
-        <div class="sidebar-items-group" id="group-criacional">
-          ${creational.map(p => renderPatternItem(p, currentHash, studied)).join("")}
+        <div class="sidebar-items-group ${isGroupOpen("criacional") ? "is-open" : ""}" id="group-criacional">
+          <div class="sidebar-items-inner">
+            ${creational.map(p => renderPatternItem(p, currentHash, studied)).join("")}
+          </div>
         </div>
       </div>
 
       <!-- Structural (7) -->
       <div class="sidebar-group">
-        <button type="button" class="sidebar-group-title" data-group="estrutural" aria-expanded="true">
+        <button type="button" class="sidebar-group-title" data-group="estrutural" aria-expanded="${isGroupOpen("estrutural")}">
           <span>${t("groupStructural")}</span>
-          <span class="chevron">${icons.chevronDown}</span>
+          <span class="chevron">${icons.chevronRight}</span>
         </button>
-        <div class="sidebar-items-group" id="group-estrutural">
-          ${structural.map(p => renderPatternItem(p, currentHash, studied)).join("")}
+        <div class="sidebar-items-group ${isGroupOpen("estrutural") ? "is-open" : ""}" id="group-estrutural">
+          <div class="sidebar-items-inner">
+            ${structural.map(p => renderPatternItem(p, currentHash, studied)).join("")}
+          </div>
         </div>
       </div>
 
       <!-- Behavioral (11) -->
       <div class="sidebar-group">
-        <button type="button" class="sidebar-group-title" data-group="comportamental" aria-expanded="true">
+        <button type="button" class="sidebar-group-title" data-group="comportamental" aria-expanded="${isGroupOpen("comportamental")}">
           <span>${t("groupBehavioral")}</span>
-          <span class="chevron">${icons.chevronDown}</span>
+          <span class="chevron">${icons.chevronRight}</span>
         </button>
-        <div class="sidebar-items-group" id="group-comportamental">
-          ${behavioral.map(p => renderPatternItem(p, currentHash, studied)).join("")}
+        <div class="sidebar-items-group ${isGroupOpen("comportamental") ? "is-open" : ""}" id="group-comportamental">
+          <div class="sidebar-items-inner">
+            ${behavioral.map(p => renderPatternItem(p, currentHash, studied)).join("")}
+          </div>
         </div>
       </div>
 
       <!-- Foundations & Book Overview -->
       <div class="sidebar-group">
-        <button type="button" class="sidebar-group-title" data-group="geral" aria-expanded="true">
+        <button type="button" class="sidebar-group-title" data-group="geral" aria-expanded="${isGroupOpen("geral")}">
           <span>${t("groupFoundations")}</span>
-          <span class="chevron">${icons.chevronDown}</span>
+          <span class="chevron">${icons.chevronRight}</span>
         </button>
-        <div class="sidebar-items-group" id="group-geral">
-          <a href="#/" class="sidebar-item ${currentHash === "#/" || currentHash === "" || currentHash === "#/livro" ? "active" : ""}">
-            <span class="sidebar-item-left">
-              <span class="sidebar-code-pill">00</span>
-              <span>${t("navHome")}</span>
-            </span>
-          </a>
-          <a href="#/principios" class="sidebar-item ${currentHash === "#/principios" ? "active" : ""}">
-            <span class="sidebar-item-left">
-              <span class="sidebar-code-pill">OO</span>
-              <span>${t("navPrinciples")}</span>
-            </span>
-          </a>
-          <a href="#/remodelacao" class="sidebar-item ${currentHash === "#/remodelacao" ? "active" : ""}">
-            <span class="sidebar-item-left">
-              <span class="sidebar-code-pill">8C</span>
-              <span>${t("navRedesign")}</span>
-            </span>
-          </a>
-          <a href="#/lexi" class="sidebar-item ${currentHash === "#/lexi" ? "active" : ""}">
-            <span class="sidebar-item-left">
-              <span class="sidebar-code-pill">LX</span>
-              <span>${t("navLexi")}</span>
-            </span>
-          </a>
-          <a href="#/matriz" class="sidebar-item ${currentHash === "#/matriz" ? "active" : ""}">
-            <span class="sidebar-item-left">
-              <span class="sidebar-code-pill">MX</span>
-              <span>${t("navMatrix")}</span>
-            </span>
-          </a>
-          <a href="#/relacionamentos" class="sidebar-item ${currentHash === "#/relacionamentos" ? "active" : ""}">
-            <span class="sidebar-item-left">
-              <span class="sidebar-code-pill">GR</span>
-              <span>${t("navRelationships")}</span>
-            </span>
-          </a>
+        <div class="sidebar-items-group ${isGroupOpen("geral") ? "is-open" : ""}" id="group-geral">
+          <div class="sidebar-items-inner">
+            <a href="#/" class="sidebar-item ${currentHash === "#/" || currentHash === "" || currentHash === "#/livro" ? "active" : ""}">
+              <span class="sidebar-item-left">
+                <span class="sidebar-code-pill">00</span>
+                <span>${t("navHome")}</span>
+              </span>
+            </a>
+            <a href="#/principios" class="sidebar-item ${currentHash === "#/principios" ? "active" : ""}">
+              <span class="sidebar-item-left">
+                <span class="sidebar-code-pill">OO</span>
+                <span>${t("navPrinciples")}</span>
+              </span>
+            </a>
+            <a href="#/remodelacao" class="sidebar-item ${currentHash === "#/remodelacao" ? "active" : ""}">
+              <span class="sidebar-item-left">
+                <span class="sidebar-code-pill">8C</span>
+                <span>${t("navRedesign")}</span>
+              </span>
+            </a>
+            <a href="#/lexi" class="sidebar-item ${currentHash === "#/lexi" ? "active" : ""}">
+              <span class="sidebar-item-left">
+                <span class="sidebar-code-pill">LX</span>
+                <span>${t("navLexi")}</span>
+              </span>
+            </a>
+            <a href="#/matriz" class="sidebar-item ${currentHash === "#/matriz" ? "active" : ""}">
+              <span class="sidebar-item-left">
+                <span class="sidebar-code-pill">MX</span>
+                <span>${t("navMatrix")}</span>
+              </span>
+            </a>
+            <a href="#/relacionamentos" class="sidebar-item ${currentHash === "#/relacionamentos" ? "active" : ""}">
+              <span class="sidebar-item-left">
+                <span class="sidebar-code-pill">GR</span>
+                <span>${t("navRelationships")}</span>
+              </span>
+            </a>
+          </div>
         </div>
       </div>
 
       <!-- Labs & Evaluation -->
       <div class="sidebar-group">
-        <button type="button" class="sidebar-group-title" data-group="pratica" aria-expanded="true">
+        <button type="button" class="sidebar-group-title" data-group="pratica" aria-expanded="${isGroupOpen("pratica")}">
           <span>${t("groupPractice")}</span>
-          <span class="chevron">${icons.chevronDown}</span>
+          <span class="chevron">${icons.chevronRight}</span>
         </button>
-        <div class="sidebar-items-group" id="group-pratica">
-          <a href="#/laboratorios" class="sidebar-item ${currentHash === "#/laboratorios" ? "active" : ""}">
-            <span class="sidebar-item-left">
-              <span class="sidebar-code-pill">LB</span>
-              <span>${t("navLabs")}</span>
-            </span>
-            <span class="item-badge">9 LABS</span>
-          </a>
-          <a href="#/quizzes" class="sidebar-item ${currentHash === "#/quizzes" ? "active" : ""}">
-            <span class="sidebar-item-left">
-              <span class="sidebar-code-pill">QZ</span>
-              <span>${t("navQuizzes")}</span>
-            </span>
-            <span class="item-badge">QUIZ</span>
-          </a>
-          <a href="#/referencias" class="sidebar-item ${currentHash === "#/referencias" ? "active" : ""}">
-            <span class="sidebar-item-left">
-              <span class="sidebar-code-pill">RF</span>
-              <span>${t("navReferences")}</span>
-            </span>
-          </a>
+        <div class="sidebar-items-group ${isGroupOpen("pratica") ? "is-open" : ""}" id="group-pratica">
+          <div class="sidebar-items-inner">
+            <a href="#/laboratorios" class="sidebar-item ${currentHash === "#/laboratorios" ? "active" : ""}">
+              <span class="sidebar-item-left">
+                <span class="sidebar-code-pill">LB</span>
+                <span>${t("navLabs")}</span>
+              </span>
+              <span class="item-badge">9 LABS</span>
+            </a>
+            <a href="#/quizzes" class="sidebar-item ${currentHash === "#/quizzes" ? "active" : ""}">
+              <span class="sidebar-item-left">
+                <span class="sidebar-code-pill">QZ</span>
+                <span>${t("navQuizzes")}</span>
+              </span>
+              <span class="item-badge">QUIZ</span>
+            </a>
+            <a href="#/referencias" class="sidebar-item ${currentHash === "#/referencias" ? "active" : ""}">
+              <span class="sidebar-item-left">
+                <span class="sidebar-code-pill">RF</span>
+                <span>${t("navReferences")}</span>
+              </span>
+            </a>
+          </div>
         </div>
       </div>
     </nav>
@@ -202,21 +225,57 @@ export function renderSidebar(sidebarEl, currentHash = "") {
   const filterInput = sidebarEl.querySelector("#sidebar-filter-input");
   const emptyState = sidebarEl.querySelector("#sidebar-empty-state");
   const clearBtn = sidebarEl.querySelector("#sidebar-clear-filter-btn");
+  const groupTitles = sidebarEl.querySelectorAll(".sidebar-group-title");
 
   function applyFilter(term) {
     const clean = term.toLowerCase().trim();
-    const items = sidebarEl.querySelectorAll(".sidebar-item");
     let visibleCount = 0;
 
-    items.forEach(item => {
-      const text = item.textContent.toLowerCase();
-      if (!clean || text.includes(clean)) {
+    if (clean) {
+      groupTitles.forEach(title => {
+        const grpId = title.getAttribute("data-group");
+        const groupEl = sidebarEl.querySelector(`#group-${grpId}`);
+        if (!groupEl) return;
+
+        let hasMatch = false;
+        groupEl.querySelectorAll(".sidebar-item").forEach(item => {
+          const text = item.textContent.toLowerCase();
+          if (text.includes(clean)) {
+            item.style.display = "flex";
+            hasMatch = true;
+            visibleCount++;
+          } else {
+            item.style.display = "none";
+          }
+        });
+
+        if (hasMatch) {
+          groupEl.classList.add("is-open");
+          title.setAttribute("aria-expanded", "true");
+        } else {
+          groupEl.classList.remove("is-open");
+          title.setAttribute("aria-expanded", "false");
+        }
+      });
+    } else {
+      sidebarEl.querySelectorAll(".sidebar-item").forEach(item => {
         item.style.display = "flex";
         visibleCount++;
-      } else {
-        item.style.display = "none";
-      }
-    });
+      });
+      groupTitles.forEach(title => {
+        const grpId = title.getAttribute("data-group");
+        const groupEl = sidebarEl.querySelector(`#group-${grpId}`);
+        if (!groupEl) return;
+        const open = grpId === activeGroup;
+        if (open) {
+          groupEl.classList.add("is-open");
+          title.setAttribute("aria-expanded", "true");
+        } else {
+          groupEl.classList.remove("is-open");
+          title.setAttribute("aria-expanded", "false");
+        }
+      });
+    }
 
     if (emptyState) {
       emptyState.hidden = visibleCount > 0;
@@ -235,19 +294,34 @@ export function renderSidebar(sidebarEl, currentHash = "") {
     });
   }
 
-  const groupTitles = sidebarEl.querySelectorAll(".sidebar-group-title");
   groupTitles.forEach(title => {
     title.addEventListener("click", () => {
       const grpId = title.getAttribute("data-group");
       const groupEl = sidebarEl.querySelector(`#group-${grpId}`);
-      const chevron = title.querySelector(".chevron");
       if (!groupEl) return;
-      const isHidden = groupEl.style.display === "none";
-      groupEl.style.display = isHidden ? "block" : "none";
-      title.setAttribute("aria-expanded", isHidden ? "true" : "false");
-      if (chevron) {
-        chevron.innerHTML = isHidden ? icons.chevronDown : icons.chevronRight;
-      }
+
+      const isCurrentlyOpen = groupEl.classList.contains("is-open");
+
+      groupTitles.forEach(otherTitle => {
+        const otherId = otherTitle.getAttribute("data-group");
+        const otherGroupEl = sidebarEl.querySelector(`#group-${otherId}`);
+        if (!otherGroupEl) return;
+
+        if (otherId === grpId) {
+          const nextState = !isCurrentlyOpen;
+          if (nextState) {
+            otherGroupEl.classList.add("is-open");
+            otherTitle.setAttribute("aria-expanded", "true");
+            activeGroup = grpId;
+          } else {
+            otherGroupEl.classList.remove("is-open");
+            otherTitle.setAttribute("aria-expanded", "false");
+          }
+        } else {
+          otherGroupEl.classList.remove("is-open");
+          otherTitle.setAttribute("aria-expanded", "false");
+        }
+      });
     });
   });
 }
